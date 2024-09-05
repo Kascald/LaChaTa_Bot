@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.lachata'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://m2.dv8tion.net/releases'
+    }
+}
+
+dependencies {
+    implementation 'net.dv8tion:JDA:5.1.0'
+    implementation 'com.sedmelluq:lavaplayer:x.y.z'
+
+    implementation 'org.assertj:assertj-core:3.26.3'
+    implementation 'ch.qos.logback:logback-classic:1.5.6'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
