@@ -18,7 +18,7 @@ public class MainBot {
 		JDA jda = JDABuilder.createDefault(botToken).build();
 
 		CommandManager botCommandManager = new CommandManager();
-		botCommandManager.setCommands();
+//		botCommandManager.setCommands();
 
 		jda.addEventListener(botCommandManager);
 		jda.updateCommands().addCommands(botCommandManager.getCommands());

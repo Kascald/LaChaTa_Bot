@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LavaMusicManager {
 	private static final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
 	private static final ConcurrentHashMap<Long, GuildMusicManager> musicManager = new ConcurrentHashMap<>();
-
 	public static synchronized GuildMusicManager getGuildMusicManager(Guild guild) {
 		long guildId = Long.parseLong(guild.getId());
 		return musicManager.computeIfAbsent(guildId, id -> {
