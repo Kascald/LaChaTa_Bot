@@ -1,9 +1,11 @@
 package com.lachata.command;
 
 import com.lachata.entity.MusicInfo;
+import com.lachata.entity.MusicQueue;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public interface GeneralBotCommand {
 //	    this.commands.add(Commands.slash("재생", "음악 재생 : URL , 검색어  (유투브 기준) "));
@@ -16,6 +18,5 @@ public interface GeneralBotCommand {
 	void playingMusic();
 	void musicStop();
 	void musicSkip();
-
-	List<MusicInfo> nowQueue;
+	MusicQueue nowQueue();
 }
