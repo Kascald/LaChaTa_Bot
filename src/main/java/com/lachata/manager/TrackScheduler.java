@@ -28,7 +28,8 @@ public class TrackScheduler extends AudioEventAdapter {
 		}
 	}
 
-	private void nextTrack() {
+	public void nextTrack() {
 		player.startTrack(musicQueue.nextTrack(), false);
 	}
+    //대기열 가져오기
 }
