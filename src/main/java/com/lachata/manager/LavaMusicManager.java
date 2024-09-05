@@ -10,6 +10,10 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.clients.AndroidTestsuite;
+import dev.lavalink.youtube.clients.Music;
+import dev.lavalink.youtube.clients.Web;
+import dev.lavalink.youtube.clients.skeleton.Client;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
@@ -19,15 +23,27 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LavaMusicManager {
 	private static final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
 	private static final ConcurrentHashMap<Long, GuildMusicManager> musicManager = new ConcurrentHashMap<>();
-	private static final YoutubeAudioSourceManager youtubeSourceManager = new YoutubeAudioSourceManager();
+
+	// YoutubeAudioSourceManager 인스턴스를 초기화합니다. 검색을 활성화하고 다양한 클라이언트를 추가합니다.
+	private static final YoutubeAudioSourceManager youtube = new YoutubeAudioSourceManager(
+			/*allowSearch:*/ true,
+			                 new Client[] {
+					                 new Music(),
+					                 new Web(),
+					                 new AndroidTestsuite()
+			                 }
+	);
 
 	static {
-		playerManager.registerRemoteSources(playerManager);
-		playerManager.registerLocalSource(playerManager);
+		// YoutubeAudioSourceManager를 등록합니다.
+		playerManager.registerSourceManager(youtube);
 
-		playerManager.registerSourceManager(youtubeSourceManager);
+		// 기타 소스 관리자를 등록합니다.
+		AudioSourceManagers.registerRemoteSources(playerManager);
+		AudioSourceManagers.registerLocalSource(playerManager);
 	}
 
+	// 길드별 음악 관리자를 반환하거나 없으면 생성합니다.
 	public static synchronized GuildMusicManager getGuildMusicManager(Guild guild) {
 		long guildId = Long.parseLong(guild.getId());
 
@@ -38,20 +54,18 @@ public class LavaMusicManager {
 		});
 	}
 
-	// URL 또는 검색어를 받아 트랙을 로드하고 재생
+	// URL 또는 검색어를 받아 트랙을 로드하고 재생합니다.
 	public static void loadAndPlay(final TextChannel textChannel, final Guild guild, final String input) {
-			loadUrlAndPlay(textChannel, guild, input);
+		loadUrlAndPlay(textChannel, guild, input);
 	}
 
-	// URL을 사용한 트랙 로드 및 재생
+	// URL을 사용한 트랙 로드 및 재생.
 	public static void loadUrlAndPlay(final TextChannel textChannel, final Guild guild, final String trackUrl) {
-//		final String sanitizedUrl = sanitizeUrl(trackUrl); // 파라미터 제거
 		final GuildMusicManager musicManager = getGuildMusicManager(guild);
 		final MusicQueue musicQueue = musicManager.scheduler.getMusicQueue();
 
-//		playerManager.loadItemOrdered(musicManager, sanitizedUrl, new AudioLoadResultHandler() {
-		playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
-
+		// 주어진 URL 또는 검색어를 사용해 트랙을 로드합니다.
+		playerManager.loadItem(trackUrl, new AudioLoadResultHandler() {
 			@Override
 			public void trackLoaded(AudioTrack audioTrack) {
 				// 트랙을 대기열에 추가하고 재생
@@ -61,9 +75,7 @@ public class LavaMusicManager {
 				musicManager.scheduler.playQueue(audioTrack);
 
 				textChannel.sendMessage(
-						String.format("Added track **`%s`** by **`%s`**",
-						              audioTrack.getInfo().title,
-						              audioTrack.getInfo().author)
+						String.format("Added track **`%s`** by **`%s`**", audioTrack.getInfo().title, audioTrack.getInfo().author)
 				                       ).queue();
 			}
 
@@ -83,9 +95,7 @@ public class LavaMusicManager {
 
 					textChannel.sendMessage(
 							String.format("Added playlist with **%d** tracks. Now playing: **`%s`** by **`%s`**",
-							              tracks.size(),                           // 전체 트랙 수
-							              firstTrack.getInfo().title,              // 첫 번째 트랙의 제목
-							              firstTrack.getInfo().author)             // 첫 번째 트랙의 저자
+							              tracks.size(), firstTrack.getInfo().title, firstTrack.getInfo().author)
 					                       ).queue();
 				}
 			}
@@ -104,17 +114,59 @@ public class LavaMusicManager {
 		});
 	}
 
-
+	// 특정 길드에 음악 관리자가 있는지 확인합니다.
 	public static boolean hasGuildMusicManager(Guild guild) {
 		return musicManager.containsKey(Long.parseLong(guild.getId()));
 	}
 
+	// 길드 음악 관리자를 제거합니다.
 	public static void removeGuildMusicManager(Guild guild) {
 		musicManager.remove(Long.parseLong(guild.getId()));
 	}
 
-	// 파라미터 제거 메서드
-	public static String sanitizeUrl(String url) {
-		return url.split("\\?")[0];
+	// 트랙 일시정지 메서드
+	public static void pauseTrack(final TextChannel textChannel, final Guild guild) {
+		final GuildMusicManager musicManager = getGuildMusicManager(guild);
+		musicManager.pauseTrack();
+
+		textChannel.sendMessage("현재 곡을 일시정지합니다.").queue();
 	}
+
+	// 트랙 재개 메서드
+	public static void resumeTrack(final TextChannel textChannel, final Guild guild) {
+		final GuildMusicManager musicManager = getGuildMusicManager(guild);
+
+		if (musicManager.isPaused())
+			musicManager.resumeTrack();
+
+		textChannel.sendMessage("일시정지된 현재 곡을 재생합니다.").queue();
+	}
+
+	// 일시정지된 트랙 유무 확인
+	public static boolean isTrackPaused(final Guild guild) {
+		final GuildMusicManager musicManager = getGuildMusicManager(guild);
+		return musicManager.isPaused();
+	}
+
+
+	// 현재 곡 스킵하기
+	public static void skipTrack(final Guild guild) {
+		final GuildMusicManager musicManager = getGuildMusicManager(guild);
+		musicManager.scheduler.skipTrack();
+	}
+
+	public static MusicQueue nowQueueList(final Guild guild) {
+		final GuildMusicManager musicManager = getGuildMusicManager(guild);
+		return musicManager.getMusicQueue();
+	}
+
+
+	// 플레이어 볼륨 설정
+	public static void setVolume(final TextChannel textChannel, final Guild guild, int volume) {
+		final GuildMusicManager musicManager = getGuildMusicManager(guild);
+		musicManager.setVolume(volume);
+
+		textChannel.sendMessage(String.format("볼륨이 %d 로 설정되었습니다. ", volume)).queue();
+	}
+
 }

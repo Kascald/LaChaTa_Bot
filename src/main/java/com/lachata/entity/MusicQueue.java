@@ -1,6 +1,6 @@
 package com.lachata.entity;
 
-import com.lachata.checker.FormatChecker;
+import com.lachata.utils.FormatChecker;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import java.util.List;
@@ -34,6 +34,10 @@ public class MusicQueue {
 	// 현재 재생 중인 트랙 반환
 	public MusicInfo getNowPlaying() {
 		return playingQueue.peek();
+	}
+
+	public void clearMusicQueue() {
+		playingQueue.clear();
 	}
 
 	// 다음 트랙을 가져와 삭제

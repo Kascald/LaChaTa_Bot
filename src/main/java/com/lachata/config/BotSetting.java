@@ -4,6 +4,8 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 public class BotSetting {
 	private final List<Channel> channelList;
 	private final int trackVolume;
@@ -29,5 +31,11 @@ public class BotSetting {
 
 	public void setChannelList(Channel channel) {
 		channelList.add(channel);
+	}
+
+	public String toStringChannelList() {
+		return channelList.stream()
+				.map(Channel::getName)
+				.collect(Collectors.joining(", "));
 	}
 }

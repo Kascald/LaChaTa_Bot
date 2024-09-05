@@ -1,4 +1,4 @@
-package com.lachata.checker;
+package com.lachata.utils;
 
 public class FormatChecker {
 	public boolean longCheck(Object object) {

@@ -28,12 +28,17 @@ public class TrackScheduler extends AudioEventAdapter {
 		}
 	}
 
+	public void skipTrack() {
+		AudioTrack track = musicQueue.getFirstTrack();
+	}
+
 	public void nextTrack() {
 		AudioTrack nextTrack = musicQueue.nextTrack();
 		if (nextTrack != null) {
 			player.startTrack(nextTrack, false);  // 다음 트랙을 재생
 		} else {
-			System.out.println("End of the queue, no more tracks.");
+			System.out.println("End of the queue, no more tracks."); //다음 트랙이 없음
+			musicQueue.clearMusicQueue(); // 트랙 대기열 객체를 클리어함.
 		}
 	}
 
