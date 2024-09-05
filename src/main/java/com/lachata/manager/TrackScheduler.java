@@ -5,7 +5,10 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import lombok.Getter;
 
+
+@Getter
 public class TrackScheduler extends AudioEventAdapter {
 	private final AudioPlayer player;
 	private final MusicQueue musicQueue;
@@ -17,7 +20,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
 	public void playQueue(AudioTrack track) {
 		if(player.startTrack(track,true)) {
-			musicQueue.getStartQueue();
+			musicQueue.getFirstTrack();
 		}
 	}
 
@@ -29,7 +32,11 @@ public class TrackScheduler extends AudioEventAdapter {
 	}
 
 	public void nextTrack() {
-		player.startTrack(musicQueue.nextTrack(), false);
+		AudioTrack nextTrack = musicQueue.nextTrack();
+		if (nextTrack != null) {
+			player.startTrack(nextTrack, false);  // 다음 트랙을 재생
+		} else {
+			System.out.println("End of the queue, no more tracks.");
+		}
 	}
-    //대기열 가져오기
 }

@@ -3,6 +3,7 @@ package com.lachata.command;
 import com.lachata.entity.MusicQueue;
 import com.lachata.manager.LavaMusicManager;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -11,10 +12,13 @@ public class OnMessageCommandHandler implements GeneralBotCommand{
 //	private static final List<String> commandDictionary = List.of("재생", "정지", "스킵", "대기열", "현재", "볼륨");
 
 	public void handleCommand(MessageReceivedEvent mre, String commandName, String arguments) {
+		TextChannel channel = mre.getChannel().asTextChannel();
+		Guild guild = mre.getGuild();
+
 		switch(commandName){
 			case "재생":
 				inviteBotVoice(mre);
-				LavaMusicManager.loadAndPlay(mre.get());
+				LavaMusicManager.loadUrlAndPlay(channel , guild, arguments);
 			case "정지":
 			case "스킵":
 			case "대기열":

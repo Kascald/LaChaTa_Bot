@@ -1,7 +1,7 @@
 package com.lachata.manager;
 
 import com.lachata.command.OnMessageCommandHandler;
-import com.lachata.command.SlashCommandHandler;
+//import com.lachata.command.SlashCommandHandler;
 import com.lachata.config.BotSetting;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -20,12 +20,12 @@ public class CommandManager extends ListenerAdapter {
 	private final List<CommandData> commands = new ArrayList<>();
 	private static final List<String> commandDictionary = List.of("재생", "정지", "스킵", "대기열", "현재", "볼륨");
 	private final OnMessageCommandHandler messageCommand;
-	private final SlashCommandHandler slashCommand;
+//	private final SlashCommandHandler slashCommand;
 	private final BotSetting botSetting;
 
 	public CommandManager() {
 		this.messageCommand = new OnMessageCommandHandler();
-		this.slashCommand = new SlashCommandHandler();
+//		this.slashCommand = new SlashCommandHandler();
 		this.botSetting = new BotSetting();
 		this.commands.add(Commands.slash("재생", "음악 재생 : URL , 검색어  (유투브 기준) "));
 		this.commands.add(Commands.slash("정지", "음악 정지"));
@@ -35,10 +35,10 @@ public class CommandManager extends ListenerAdapter {
 		this.commands.add(Commands.slash("볼륨", "음악 재생 볼륨 조절 ( 0 ~ 100 ) "));
 	}
 
-	@Override
-	public void onSlashCommandInteraction(SlashCommandInteractionEvent scie) {
-		super.onSlashCommandInteraction(scie);
-	}
+//	@Override
+//	public void onSlashCommandInteraction(SlashCommandInteractionEvent scie) {
+//		super.onSlashCommandInteraction(scie);
+//	}
 
 	@Override
 	public void onMessageReceived(MessageReceivedEvent mre) {

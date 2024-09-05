@@ -22,4 +22,8 @@ public class GuildMusicManager {
 		return new AudioPlayerSendHandler(audioPlayer);
 	}
 
+	public MusicQueue getMusicQueue() {
+		return scheduler.getMusicQueue();
+	}
+
 }

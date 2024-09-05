@@ -1,5 +1,7 @@
 package com.lachata.manager;
 
+import com.lachata.entity.MusicInfo;
+import com.lachata.entity.MusicQueue;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -34,10 +36,16 @@ public class LavaMusicManager {
 
 	public static void loadUrlAndPlay(final TextChannel textChannel, final Guild guild, final String trackUrl) {
 		final GuildMusicManager musicManager = getGuildMusicManager(guild);
+		final MusicQueue musicQueue = musicManager.scheduler.getMusicQueue();
 		playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
 
 			@Override
 			public void trackLoaded(AudioTrack audioTrack) {
+				// 트랙을 대기열에 추가하고 재생
+				MusicInfo musicInfo = new MusicInfo(audioTrack, audioTrack.getInfo().title, audioTrack.getInfo().author, audioTrack.getInfo().length, 0, false);
+				musicQueue.addQueue(musicInfo);  // 대기열에 추가
+
+
 				musicManager.scheduler.playQueue(audioTrack);
 
 				textChannel.sendMessage(
@@ -52,6 +60,13 @@ public class LavaMusicManager {
 				final List<AudioTrack> tracks = audioPlaylist.getTracks();
 				if(!tracks.isEmpty()) {
 					AudioTrack firstTrack = tracks.get(0);
+
+					// 플레이리스트의 모든 트랙을 대기열에 추가
+					for (AudioTrack track : tracks) {
+						MusicInfo musicInfo = new MusicInfo(track, track.getInfo().title, track.getInfo().author, track.getInfo().length, 0, false);
+						musicQueue.addQueue(musicInfo);  // 대기열에 추가
+					}
+
 					musicManager.scheduler.playQueue(firstTrack);
 
 					textChannel.sendMessage(
@@ -76,6 +91,7 @@ public class LavaMusicManager {
 			}
 		});
 	}
+
 
 
 	public static boolean hasGuildMusicManager(Guild guild) {
