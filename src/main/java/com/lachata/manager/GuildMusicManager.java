@@ -1,9 +1,11 @@
 package com.lachata.manager;
 
+import com.lachata.entity.MusicInfo;
 import com.lachata.utils.FormatChecker;
 import com.lachata.entity.MusicQueue;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 public class GuildMusicManager {
 	public final AudioPlayer audioPlayer;
@@ -36,7 +38,24 @@ public class GuildMusicManager {
 	}
 	//재생 건너뛰기 (스킵)
 
-	// 현재 재생곡 반환
+	// 현재 재생곡 반환 (MusicQueue 기반)
+	public AudioTrack getCurrentTrack() {
+		// by Player
+		AudioTrack nowTrack = audioPlayer.getPlayingTrack();
+
+//		// by Queue
+//		AudioTrack maybeNowTrack = scheduler.getNowPlayingMusic().getTrack();
+//
+//		if(nowTrack.getInfo().title.equals(maybeNowTrack.getInfo().title))
+		return nowTrack;
+
+//		return null;
+	}
+
+	public long currentTrackPosition() {
+		return audioPlayer.getPlayingTrack().getPosition();
+	}
+
 
 
 	// 현재 재생목록 반환

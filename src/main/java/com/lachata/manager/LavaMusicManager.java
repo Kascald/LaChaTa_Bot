@@ -155,9 +155,22 @@ public class LavaMusicManager {
 		musicManager.scheduler.skipTrack();
 	}
 
+	// 대기열 목록 반환
 	public static MusicQueue nowQueueList(final Guild guild) {
 		final GuildMusicManager musicManager = getGuildMusicManager(guild);
 		return musicManager.getMusicQueue();
+	}
+
+	// 현재 재생 곡 정보 반환
+	public static AudioTrack nowPlayingInfo(final Guild guild) {
+		final GuildMusicManager musicManager = getGuildMusicManager(guild);
+
+		return musicManager.getCurrentTrack();
+	}
+
+	public static long nowPlayingLength(final Guild guild) {
+		final GuildMusicManager musicManager = getGuildMusicManager(guild);
+		return musicManager.currentTrackPosition();
 	}
 
 

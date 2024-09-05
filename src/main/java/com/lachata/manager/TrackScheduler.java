@@ -1,5 +1,6 @@
 package com.lachata.manager;
 
+import com.lachata.entity.MusicInfo;
 import com.lachata.entity.MusicQueue;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
@@ -40,6 +41,10 @@ public class TrackScheduler extends AudioEventAdapter {
 			System.out.println("End of the queue, no more tracks."); //다음 트랙이 없음
 			musicQueue.clearMusicQueue(); // 트랙 대기열 객체를 클리어함.
 		}
+	}
+
+	public MusicInfo getNowPlayingMusic() {
+		return musicQueue.getNowPlaying();
 	}
 
 	public MusicQueue getMusicQueue() {

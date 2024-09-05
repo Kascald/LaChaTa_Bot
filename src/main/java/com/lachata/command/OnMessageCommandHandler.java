@@ -4,6 +4,7 @@ import com.lachata.config.BotSetting;
 import com.lachata.entity.MusicQueue;
 import com.lachata.manager.LavaMusicManager;
 import com.lachata.utils.EmbedUtils;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -13,7 +14,7 @@ import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class OnMessageCommandHandler implements GeneralBotCommand{
+public class OnMessageCommandHandler {
 //	private static final List<String> commandDictionary = List.of("재생", "정지", "스킵", "대기열", "현재", "볼륨");
 	private final EmbedUtils embedUtils;
 
@@ -24,6 +25,7 @@ public class OnMessageCommandHandler implements GeneralBotCommand{
 	public void handleCommand(MessageReceivedEvent mre, String commandName, String arguments) {
 		TextChannel channel = mre.getChannel().asTextChannel();
 		Guild guild = mre.getGuild();
+
 
 		switch(commandName){
 			case "재생":
@@ -48,39 +50,27 @@ public class OnMessageCommandHandler implements GeneralBotCommand{
 
 			case "대기열":
 				MusicQueue nowPlayinLinst = LavaMusicManager.nowQueueList(guild);
-				EmbedBuilder builder = embedUtils.createQueueEmbed(nowPlayinLinst);
 
-				channel.sendMessageEmbeds(builder.build()).queue();
+
+				channel.sendMessageEmbeds(
+						embedUtils.createQueueEmbed(nowPlayinLinst).build()
+				                         ).queue();
 				break;
 
 			case "현재":
-				LavaMusicManager.get
+				AudioTrack currentPlaying = LavaMusicManager.nowPlayingInfo(guild);
+				long currentPosition = LavaMusicManager.nowPlayingLength(guild);
+
+				channel.sendMessageEmbeds(
+						embedUtils.createNowPlayingEmbed(currentPlaying,currentPosition).build()
+				                         ).queue();
 				break;
+
 			case "볼륨":
 				int wannaVolume = Integer.parseInt(arguments);
 				LavaMusicManager.setVolume(channel, guild, wannaVolume);
 		}
 	}
-	@Override
-	public void playingMusic() {
-
-	}
-
-	@Override
-	public void musicStop() {
-
-	}
-
-	@Override
-	public void musicSkip() {
-
-	}
-
-	@Override
-	public MusicQueue nowQueue() {
-		return null;
-	}
-
 
 	private void inviteBotVoice(MessageReceivedEvent mre) {
 		if (mre.getMember() == null || mre.getMember().getVoiceState() == null) {
