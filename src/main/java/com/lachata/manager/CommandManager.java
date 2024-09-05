@@ -47,7 +47,12 @@ public class CommandManager extends ListenerAdapter {
 			return;
 		}
 
+
 		final String message = mre.getMessage().getContentRaw();
+
+		if(message.startsWith("!채널설정")) {
+			messageCommand.addChannel(botSetting, mre.getChannel());
+		}
 
 		if (message.startsWith("!")) {
 			final String[] inputCommand = message.substring(1).split(" ", 2);

@@ -4,7 +4,9 @@ import com.lachata.config.ConfigLoader;
 import com.lachata.manager.CommandManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
+import java.util.EnumSet;
 import java.util.Properties;
 
 public class MainBot {
@@ -15,13 +17,16 @@ public class MainBot {
 		botConfigLoader.loadingFromFile();
 		String botToken = botConfigLoader.loadToken();
 
-		JDA jda = JDABuilder.createDefault(botToken).build();
-
+		JDA jda = JDABuilder.createDefault(botToken,
+		                                   EnumSet.of(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_VOICE_STATES))  // GUILD_VOICE_STATES 추가
+				.build();
 		CommandManager botCommandManager = new CommandManager();
 //		botCommandManager.setCommands();
 
 		jda.addEventListener(botCommandManager);
-		jda.updateCommands().addCommands(botCommandManager.getCommands());
+
+		jda.updateCommands().addCommands(botCommandManager.getCommands()).queue();
+
 
 	}
 }
