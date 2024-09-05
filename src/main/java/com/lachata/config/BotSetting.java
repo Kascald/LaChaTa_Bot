@@ -1,13 +1,9 @@
 package com.lachata.config;
 
-
-import lombok.Getter;
 import net.dv8tion.jda.api.entities.channel.Channel;
 
 import java.util.ArrayList;
 import java.util.List;
-
-@Getter
 public class BotSetting {
 	private final List<Channel> channelList;
 	private final int trackVolume;
@@ -25,5 +21,13 @@ public class BotSetting {
 			return channelId == channel.getIdLong(); // 설정된 채널과 같다면 true
 		}
 		return false;  //설정 채널과 다름으로 간주하고 false
+	}
+
+	public List<Channel> getChannelList() {
+		return channelList;
+	}
+
+	public void setChannelList(Channel channel) {
+		channelList.add(channel);
 	}
 }

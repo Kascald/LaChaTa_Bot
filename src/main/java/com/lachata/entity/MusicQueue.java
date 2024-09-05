@@ -2,15 +2,11 @@ package com.lachata.entity;
 
 import com.lachata.checker.FormatChecker;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.ArrayList;
 
-@Getter
-@Setter
 public class MusicQueue {
 	private final ConcurrentLinkedQueue<MusicInfo> playingQueue; // FIFO 구조
 	private final FormatChecker formatChecker;

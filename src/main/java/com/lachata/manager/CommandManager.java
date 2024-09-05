@@ -3,9 +3,6 @@ package com.lachata.manager;
 import com.lachata.command.OnMessageCommandHandler;
 //import com.lachata.command.SlashCommandHandler;
 import com.lachata.config.BotSetting;
-import lombok.Getter;
-import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -14,7 +11,6 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
 public class CommandManager extends ListenerAdapter {
 
 	private final List<CommandData> commands = new ArrayList<>();
@@ -33,6 +29,10 @@ public class CommandManager extends ListenerAdapter {
 		this.commands.add(Commands.slash("대기열", "추가한 대기열 목록보기"));
 		this.commands.add(Commands.slash("현재", "현재 재생중인 노래"));
 		this.commands.add(Commands.slash("볼륨", "음악 재생 볼륨 조절 ( 0 ~ 100 ) "));
+	}
+
+	public List<CommandData> getCommands() {
+		return commands;
 	}
 
 //	@Override
