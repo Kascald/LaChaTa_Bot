@@ -94,4 +94,26 @@ public class EmbedUtils {
 
 		return builder;
 	}
+
+
+	public EmbedBuilder commandHelpEmbed() {
+		EmbedBuilder embedBuilder = new EmbedBuilder();
+
+		// 임베드 제목과 설명 설정
+		embedBuilder.setTitle("봇 명령어 도움말");
+		embedBuilder.setDescription("아래는 사용 가능한 명령어 목록입니다:");
+
+		// 각 명령어에 대한 설명 추가
+		embedBuilder.addField("!재생", "음악 재생 : URL, 검색어 (유튜브 기준)", false);
+		embedBuilder.addField("!일시정지", "음악 일시정지", false);
+		embedBuilder.addField("!재개", "일시정지된 음악 재생", false);
+		embedBuilder.addField("!스킵", "현재 재생 중인 음악을 건너뛰기", false);
+		embedBuilder.addField("!대기열", "현재 추가된 대기열 목록 보기", false);
+		embedBuilder.addField("!현재", "현재 재생 중인 노래 보기", false);
+		embedBuilder.addField("!볼륨", "음악 재생 볼륨 조절 (0 ~ 100)", false);
+		embedBuilder.addField("!나가", "음악채널 나감", false);
+		embedBuilder.addField("!도움말 = !헬프 = !help", "명령어 도움말 호출", false);
+
+		return embedBuilder;
+	}
 }

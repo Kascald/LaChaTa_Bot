@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 public class CommandManager extends ListenerAdapter {
 	private final Logger logger = LoggerFactory.getLogger(CommandManager.class);
+	private final EmbedUtils embedUtils = new EmbedUtils();
 
 	private final List<CommandData> commands = new ArrayList<>();
 	private static final List<String> commandDictionary = List.of("재생", "일시정지", "재개" ,"스킵", "대기열", "현재", "볼륨","나가","도움말", "헬프", "help");
@@ -74,7 +75,7 @@ public class CommandManager extends ListenerAdapter {
 				final String arguments = inputCommand.length > 1 ? inputCommand[1] : "";
 
 				if (commandName.matches("도움말|help|헬프")) {
-					mre.getChannel().sendMessage(getCommandsAsString()).queue();
+					mre.getChannel().sendMessageEmbeds(embedUtils.commandHelpEmbed().build()).queue();
 				}
 
 				messageCommand.handleCommand(mre, commandName , arguments);
@@ -83,9 +84,9 @@ public class CommandManager extends ListenerAdapter {
 	}
 
 
-	public String getCommandsAsString() {
-		return commands.stream()
-				.map(commandData -> String.format("Command: %s ", commandData.getName()))
-				.collect(Collectors.joining("\n"));
-	}
+//	public String getCommandsAsString() {
+//		return commands.stream()
+//				.map(commandData -> String.format("Command: %s ", commandData.getName()))
+//				.collect(Collectors.joining("\n"));
+//	}
 }
