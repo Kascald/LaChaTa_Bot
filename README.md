@@ -41,6 +41,8 @@ export BOT_TOKEN=your-bot-token
 ```
 또는 Docker 환경에서 실행할 때: <your-bot-token> 에 봇 토큰을 입력.
 ```bash
+docker build -t lachata-bot .
+
 docker run -d --name lachata-bot-container -e BOT_TOKEN=<your-bot-token> lachata-bot
 ```
 
