@@ -55,4 +55,8 @@ public class MusicQueue {
 	public int getQueueSize() {
 		return playingQueue.size();
 	}
+
+	public AudioTrack peekNextTrack() {
+		return playingQueue.isEmpty() ? null : playingQueue.peek().getTrack();
+	}
 }

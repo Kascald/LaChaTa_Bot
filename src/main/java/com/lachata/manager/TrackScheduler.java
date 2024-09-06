@@ -79,7 +79,7 @@ public class TrackScheduler extends AudioEventAdapter {
 //			}
 //		},30 * 1000);
 //	}
-	private void scheduleLeaveAfterDelay() {
+	public void scheduleLeaveAfterDelay() {
 		if (leaveTask != null && !leaveTask.isDone()) {
 			leaveTask.cancel(false); // 기존 작업 취소
 		}
@@ -89,7 +89,7 @@ public class TrackScheduler extends AudioEventAdapter {
 	}
 
 	// 음성 채널 떠나기
-	private synchronized void leaveVoiceChannel() {
+	public void leaveVoiceChannel() {
 		AudioManager audioManager = guild.getAudioManager();
 		if(audioManager.isConnected()) {
 			audioManager.closeAudioConnection();
@@ -101,11 +101,12 @@ public class TrackScheduler extends AudioEventAdapter {
 		AudioTrack nextTrack = musicQueue.nextTrack();
 
 		if (nextTrack != null) {
-			nextTrack();
+			player.startTrack(nextTrack, false);
 		} else {
 			scheduleLeaveAfterDelay();
 		}
 	}
+
 
 	public void nextTrack() {
 		AudioTrack nextTrack = musicQueue.nextTrack();
@@ -126,11 +127,12 @@ public class TrackScheduler extends AudioEventAdapter {
 	}
 
 	public Boolean isThereMoreTracks() {
-		if (musicQueue.nextTrack() != null) {
-			return musicQueue.nextTrack().isSeekable();
-		} else if(musicQueue.nextTrack() == null) {
-			return false;
-		} else
-			return false;
+		// 다음 트랙을 삭제하지 않고 확인하기 위해 peek() 사용
+		AudioTrack nextTrack = musicQueue.peekNextTrack();
+		if (nextTrack != null) {
+			return nextTrack.isSeekable();  // null이 아닐 때만 isSeekable() 호출
+		} else {
+			return false;  // 다음 트랙이 없을 경우 false 반환
+		}
 	}
 }

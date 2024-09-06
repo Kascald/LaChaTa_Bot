@@ -29,7 +29,7 @@ public class LavaMusicManager {
 
 	// YoutubeAudioSourceManager 인스턴스를 초기화합니다. 검색을 활성화하고 다양한 클라이언트를 추가합니다.
 	private static final YoutubeAudioSourceManager youtube =
-			new YoutubeAudioSourceManager(true, true, true, new Client[] {
+			new YoutubeAudioSourceManager(true, true, true, new Client[]{
 					new Music(),
 					new Web(),
 					new AndroidTestsuite()});
@@ -71,15 +71,18 @@ public class LavaMusicManager {
 		playerManager.loadItem(searchQuery, new AudioLoadResultHandler() {
 			@Override
 			public void trackLoaded(AudioTrack audioTrack) {
-				logger.info("Single track requested: {}" , audioTrack.getInfo().title);
+				logger.info("Single track requested: {}", audioTrack.getInfo().title);
 				// 트랙을 대기열에 추가하고 재생
-				MusicInfo musicInfo = new MusicInfo(audioTrack, audioTrack.getInfo().title, audioTrack.getInfo().author, audioTrack.getInfo().length, 0, false);
+				MusicInfo musicInfo = new MusicInfo(audioTrack, audioTrack.getInfo().title,
+				                                    audioTrack.getInfo().author, audioTrack.getInfo().length, 0,
+				                                    false);
 				musicQueue.addQueue(musicInfo);  // 대기열에 추가
 
 				musicManager.scheduler.playQueue(audioTrack);
 
 				textChannel.sendMessage(
-						String.format("Added track **`%s`** by **`%s`**", audioTrack.getInfo().title, audioTrack.getInfo().author)
+						String.format("Added track **`%s`** by **`%s`**", audioTrack.getInfo().title,
+						              audioTrack.getInfo().author)
 				                       ).queue();
 			}
 
@@ -91,7 +94,8 @@ public class LavaMusicManager {
 				if (!tracks.isEmpty()) {
 					if (isUrl) {
 						for (AudioTrack track : tracks) {
-							MusicInfo musicInfo = new MusicInfo(track, track.getInfo().title, track.getInfo().author, track.getInfo().length, 0, false);
+							MusicInfo musicInfo = new MusicInfo(track, track.getInfo().title, track.getInfo().author,
+							                                    track.getInfo().length, 0, false);
 							musicQueue.addQueue(musicInfo);  // 대기열에 추가
 						}
 
@@ -100,18 +104,23 @@ public class LavaMusicManager {
 
 						textChannel.sendMessage(
 								String.format("Added playlist with **%d** tracks. Now playing: **`%s`** by **`%s`**",
-								              tracks.size(), tracks.get(0).getInfo().title, tracks.get(0).getInfo().author)
+								              tracks.size(), tracks.get(0).getInfo().title,
+								              tracks.get(0).getInfo().author
+								             )
 						                       ).queue();
 					} else {
 						AudioTrack firstTrack = tracks.get(0);
 
-						MusicInfo musicInfo = new MusicInfo(firstTrack, firstTrack.getInfo().title, firstTrack.getInfo().author, firstTrack.getInfo().length, 0, false);
+						MusicInfo musicInfo = new MusicInfo(firstTrack, firstTrack.getInfo().title,
+						                                    firstTrack.getInfo().author, firstTrack.getInfo().length,
+						                                    0, false);
 						musicQueue.addQueue(musicInfo);  // 대기열에 추가
 
 						musicManager.scheduler.playQueue(firstTrack);
 
 						textChannel.sendMessage(
-								String.format("Added track **`%s`** by **`%s`** from YouTube search.", firstTrack.getInfo().title, firstTrack.getInfo().author)
+								String.format("Added track **`%s`** by **`%s`** from YouTube search.",
+								              firstTrack.getInfo().title, firstTrack.getInfo().author)
 						                       ).queue();
 					}
 				}
@@ -126,7 +135,7 @@ public class LavaMusicManager {
 
 			@Override
 			public void loadFailed(FriendlyException e) {
-				logger.info("Track load failed: {} " , e.getMessage());
+				logger.info("Track load failed: {} ", e.getMessage());
 				// 트랙 로드 중 실패했을 때
 				textChannel.sendMessage("트랙을 로드하는 중 오류가 발생했습니다: ").queue(); // + e.getMessage()).queue();
 			}
@@ -172,12 +181,20 @@ public class LavaMusicManager {
 	public static void skipTrack(final Guild guild, final TextChannel textChannel) {
 		final GuildMusicManager musicManager = getGuildMusicManager(guild);
 
+		// isThereMoreTracks를 한 번만 호출하고 결과를 저장
 		Boolean hasMoreTracks = musicManager.scheduler.isThereMoreTracks();
+
 		if (hasMoreTracks != null && hasMoreTracks) {
-			musicManager.scheduler.skipTrack();
+			musicManager.scheduler.skipTrack();  // 다음 트랙으로 스킵
+			if (musicManager.scheduler.isThereMoreTracks()) {
+				textChannel.sendMessage("다음 곡으로 넘어갑니다.").queue();
+			} else {
+				textChannel.sendMessage("더 이상 재생할 곡이 없습니다.").queue();
+				musicManager.scheduler.scheduleLeaveAfterDelay();
+			}
 		} else {
-			musicManager.scheduler.skipTrack();
 			textChannel.sendMessage("더 이상 재생할 곡이 없습니다.").queue();
+			musicManager.scheduler.scheduleLeaveAfterDelay();
 		}
 	}
 
@@ -204,7 +221,8 @@ public class LavaMusicManager {
 	public static void setVolume(final TextChannel textChannel, final Guild guild, int volume) {
 		final GuildMusicManager musicManager = getGuildMusicManager(guild);
 
-		if(musicManager.getCurrentTrack() != null && !musicManager.audioPlayer.isPaused()) { // 현재 재생곡이 있고, 일시정지가 아니라면.
+		if (musicManager.getCurrentTrack() != null && !musicManager.audioPlayer.isPaused()) { // 현재 재생곡이 있고, 일시정지가
+			// 아니라면.
 			musicManager.pauseTrack();      // 일시 정지한 후
 			musicManager.setVolume(volume); // 볼륨 조절하고
 			musicManager.resumeTrack();     // 다시 재생 재개
