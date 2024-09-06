@@ -5,6 +5,7 @@ import com.lachata.manager.CommandManager;
 import com.lachata.utils.EmbedUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.util.EnumSet;
@@ -22,6 +23,7 @@ public class MainBot {
 
 		JDA jda = JDABuilder.createDefault(botToken,
 		                                   EnumSet.of(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_VOICE_STATES))  // GUILD_VOICE_STATES 추가
+				.setActivity(Activity.playing("Youtube Playing !도움말 !헬프 !help"))
 				.build();
 
 		EmbedUtils embedUtils = new EmbedUtils();
