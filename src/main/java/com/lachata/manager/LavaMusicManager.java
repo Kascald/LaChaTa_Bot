@@ -51,7 +51,7 @@ public class LavaMusicManager {
 		long guildId = Long.parseLong(guild.getId());
 
 		return musicManager.computeIfAbsent(guildId, id -> {
-			GuildMusicManager guildMusicManager = new GuildMusicManager(playerManager);
+			GuildMusicManager guildMusicManager = new GuildMusicManager(playerManager, guild);
 			guild.getAudioManager().setSendingHandler(guildMusicManager.getSendHandler());
 			return guildMusicManager;
 		});
@@ -184,8 +184,14 @@ public class LavaMusicManager {
 	// 플레이어 볼륨 설정
 	public static void setVolume(final TextChannel textChannel, final Guild guild, int volume) {
 		final GuildMusicManager musicManager = getGuildMusicManager(guild);
-		musicManager.setVolume(volume);
 
+		if(musicManager.getCurrentTrack() != null && !musicManager.audioPlayer.isPaused()) { // 현재 재생곡이 있고, 일시정지가 아니라면.
+			musicManager.pauseTrack();      // 일시 정지한 후
+			musicManager.setVolume(volume); // 볼륨 조절하고
+			musicManager.resumeTrack();     // 다시 재생 재개
+		} else {  // 그 외 상태라면
+			musicManager.setVolume(volume); // 볼륨 조절
+		}
 		textChannel.sendMessage(String.format("볼륨이 %d 로 설정되었습니다. ", volume)).queue();
 	}
 

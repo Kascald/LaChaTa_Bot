@@ -6,17 +6,21 @@ import com.lachata.entity.MusicQueue;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import net.dv8tion.jda.api.entities.Guild;
 
 public class GuildMusicManager {
 	public final AudioPlayer audioPlayer;
 	public final TrackScheduler scheduler;
+	public final Guild guild;
 
-	public GuildMusicManager(AudioPlayerManager manager) {
+	public GuildMusicManager(AudioPlayerManager manager, Guild guild) {
+		this.guild = guild;
 		FormatChecker formatChecker = new FormatChecker();
 		MusicQueue trackList = new MusicQueue(formatChecker);
 
 		this.audioPlayer = manager.createPlayer();
-		this.scheduler = new TrackScheduler(this.audioPlayer , trackList);
+		this.scheduler = new TrackScheduler(this.audioPlayer , trackList, guild);
 		this.audioPlayer.addListener(this.scheduler);
 
 		audioPlayer.setVolume(100);
@@ -67,5 +71,4 @@ public class GuildMusicManager {
 	public void setVolume(int volume) {
 		audioPlayer.setVolume(volume);
 	}
-
 }

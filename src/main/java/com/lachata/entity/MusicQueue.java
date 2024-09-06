@@ -40,7 +40,7 @@ public class MusicQueue {
 		playingQueue.clear();
 	}
 
-	// 다음 트랙을 가져와 삭제
+	// 삭제하고 다음 트랙을 가져오기
 	public AudioTrack nextTrack() {
 		playingQueue.poll(); // 현재 트랙을 삭제
 		return playingQueue.isEmpty() ? null : playingQueue.peek().getTrack();

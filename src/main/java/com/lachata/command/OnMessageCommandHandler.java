@@ -16,6 +16,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 public class OnMessageCommandHandler {
 //	private static final List<String> commandDictionary = List.of("재생", "정지", "스킵", "대기열", "현재", "볼륨");
 	private final Logger logger = LoggerFactory.getLogger(OnMessageCommandHandler.class);
@@ -29,7 +31,6 @@ public class OnMessageCommandHandler {
 		logger.info("handleCommand detect - command: {} /  arg : {}", commandName , arguments );
 		TextChannel channel = mre.getChannel().asTextChannel();
 		Guild guild = mre.getGuild();
-
 
 		switch(commandName){
 			case "재생":
@@ -71,10 +72,11 @@ public class OnMessageCommandHandler {
 			case "볼륨":
 				int wannaVolume = Integer.parseInt(arguments);
 				LavaMusicManager.setVolume(channel, guild, wannaVolume);
+				break;
 
 			case "나가":
 				guild.getAudioManager().closeAudioConnection();
-
+				break;
 		}
 	}
 

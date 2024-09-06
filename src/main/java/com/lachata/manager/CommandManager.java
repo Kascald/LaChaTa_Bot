@@ -8,17 +8,19 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CommandManager extends ListenerAdapter {
 	private final Logger logger = LoggerFactory.getLogger(CommandManager.class);
 
 	private final List<CommandData> commands = new ArrayList<>();
-	private static final List<String> commandDictionary = List.of("재생", "일시정지", "재개" ,"스킵", "대기열", "현재", "볼륨","나가");
+	private static final List<String> commandDictionary = List.of("재생", "일시정지", "재개" ,"스킵", "대기열", "현재", "볼륨","나가","도움말", "헬프", "help");
 	private final OnMessageCommandHandler messageCommand;
 //	private final SlashCommandHandler slashCommand;
 	private final BotSetting botSetting;
@@ -34,6 +36,11 @@ public class CommandManager extends ListenerAdapter {
 		this.commands.add(Commands.slash("대기열", "추가한 대기열 목록보기"));
 		this.commands.add(Commands.slash("현재", "현재 재생중인 노래"));
 		this.commands.add(Commands.slash("볼륨", "음악 재생 볼륨 조절 ( 0 ~ 100 ) "));
+		this.commands.add(Commands.slash("나가", "음악채널 나감" ));
+		this.commands.add(Commands.slash("도움말", "명령어 도움말 호출"));
+		this.commands.add(Commands.slash("헬프", "명령어 도움말 호출"));
+		this.commands.add(Commands.slash("help", "명령어 도움말 호출"));
+
 	}
 
 	public List<CommandData> getCommands() {
@@ -62,15 +69,23 @@ public class CommandManager extends ListenerAdapter {
 
 		if (message.startsWith("!")) {
 			final String[] inputCommand = message.substring(1).split(" ", 2);
-
 			if (commandDictionary.contains(inputCommand[0])) {
 				final String commandName = inputCommand[0];
 				final String arguments = inputCommand.length > 1 ? inputCommand[1] : "";
 
+				if (commandName.matches("도움말|help|헬프")) {
+					mre.getChannel().sendMessage(getCommandsAsString()).queue();
+				}
+
 				messageCommand.handleCommand(mre, commandName , arguments);
-			} else {
-					mre.getChannel().sendMessage("알 수 없는 명령어 입니다.").queue();
 			}
 		}
+	}
+
+
+	public String getCommandsAsString() {
+		return commands.stream()
+				.map(commandData -> String.format("Command: %s ", commandData.getName()))
+				.collect(Collectors.joining("\n"));
 	}
 }
