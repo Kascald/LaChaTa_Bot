@@ -26,7 +26,6 @@
 #
 #ENTRYPOINT ["java", "-jar", "/app/LaChaTa_Bot/build/libs/LachataBot-1.0-SNAPSHOT.jar"]
 
-
 FROM alpine:latest
 
 RUN apk update && apk --no-cache add gcompat libstdc++ bash git curl unzip zip openjdk17
@@ -44,9 +43,8 @@ RUN bash -c "source /root/.sdkman/bin/sdkman-init.sh && gradle build --no-daemon
 RUN git clone https://github.com/Kascald/LaChaTa_Bot.git
 
 WORKDIR /app/LaChaTa_Bot
-
-RUN bash -c "source /root/.sdkman/bin/sdkman-init.sh && gradle build --no-daemon --parallel"
+RUN bash -c "source /root/.sdkman/bin/sdkman-init.sh && gradle clean shadowJar --no-daemon --parallel"
 
 #ENV BOT_TOKEN=${BOT_TOKEN}
 
-ENTRYPOINT ["java", "-jar", "/app/LaChaTa_Bot/build/libs/LachataBot-1.0-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "/app/LaChaTa_Bot/build/libs/LachataBot-1.0-SNAPSHOT-all.jar"]
