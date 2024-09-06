@@ -64,7 +64,9 @@ public class LavaMusicManager {
 		final GuildMusicManager musicManager = getGuildMusicManager(guild);
 		final MusicQueue musicQueue = musicManager.scheduler.getMusicQueue();
 
-		String searchQuery = query.startsWith("http") ? query : "ytsearch:" + query;
+		boolean isUrl = query.startsWith("http");
+		String searchQuery = isUrl ? query : "ytsearch:" + query;
+
 		// 주어진 URL 또는 검색어를 사용해 트랙을 로드합니다.
 		playerManager.loadItem(searchQuery, new AudioLoadResultHandler() {
 			@Override
@@ -85,21 +87,33 @@ public class LavaMusicManager {
 			public void playlistLoaded(AudioPlaylist audioPlaylist) {
 				logger.info("List Play requested");
 				final List<AudioTrack> tracks = audioPlaylist.getTracks();
+
 				if (!tracks.isEmpty()) {
-					AudioTrack firstTrack = tracks.get(0);
+					if (isUrl) {
+						for (AudioTrack track : tracks) {
+							MusicInfo musicInfo = new MusicInfo(track, track.getInfo().title, track.getInfo().author, track.getInfo().length, 0, false);
+							musicQueue.addQueue(musicInfo);  // 대기열에 추가
+						}
 
-					// 플레이리스트의 모든 트랙을 대기열에 추가
-					for (AudioTrack track : tracks) {
-						MusicInfo musicInfo = new MusicInfo(track, track.getInfo().title, track.getInfo().author, track.getInfo().length, 0, false);
+						// 첫 번째 트랙을 재생
+						musicManager.scheduler.playQueue(tracks.get(0));
+
+						textChannel.sendMessage(
+								String.format("Added playlist with **%d** tracks. Now playing: **`%s`** by **`%s`**",
+								              tracks.size(), tracks.get(0).getInfo().title, tracks.get(0).getInfo().author)
+						                       ).queue();
+					} else {
+						AudioTrack firstTrack = tracks.get(0);
+
+						MusicInfo musicInfo = new MusicInfo(firstTrack, firstTrack.getInfo().title, firstTrack.getInfo().author, firstTrack.getInfo().length, 0, false);
 						musicQueue.addQueue(musicInfo);  // 대기열에 추가
+
+						musicManager.scheduler.playQueue(firstTrack);
+
+						textChannel.sendMessage(
+								String.format("Added track **`%s`** by **`%s`** from YouTube search.", firstTrack.getInfo().title, firstTrack.getInfo().author)
+						                       ).queue();
 					}
-
-					musicManager.scheduler.playQueue(firstTrack);
-
-					textChannel.sendMessage(
-							String.format("Added playlist with **%d** tracks. Now playing: **`%s`** by **`%s`**",
-							              tracks.size(), firstTrack.getInfo().title, firstTrack.getInfo().author)
-					                       ).queue();
 				}
 			}
 
