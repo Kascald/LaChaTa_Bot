@@ -50,7 +50,7 @@ public class OnMessageCommandHandler {
 				}
 
 			case "스킵":
-				LavaMusicManager.skipTrack(guild);
+				LavaMusicManager.skipTrack(guild, channel);
 				break;
 
 			case "대기열":

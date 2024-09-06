@@ -1,5 +1,6 @@
 package com.lachata.manager;
 
+import com.lachata.config.BotSetting;
 import com.lachata.entity.MusicInfo;
 import com.lachata.entity.MusicQueue;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -17,14 +18,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class TrackScheduler extends AudioEventAdapter {
 	private final Logger logger = LoggerFactory.getLogger(TrackScheduler.class);
 	private final AudioPlayer player;
 	private final MusicQueue musicQueue;
 	private final Guild guild;
-	private Timer leaveTimer;
+//	private Timer leaveTimer;
 
+	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+	private ScheduledFuture<?> leaveTask;
 	public TrackScheduler(AudioPlayer player, MusicQueue musicQueue, Guild guild) {
 		this.player = player;
 		this.musicQueue = musicQueue;
@@ -50,28 +57,39 @@ public class TrackScheduler extends AudioEventAdapter {
 	//트랙 시작하면 타이머 취소
 	@Override
 	public void onTrackStart(AudioPlayer player, AudioTrack track) {
-		if(leaveTimer != null) {
-			leaveTimer.cancel();
+//		if(leaveTimer != null) {
+//			leaveTimer.cancel();
+//		}
+		if (leaveTask != null) {
+			leaveTask.cancel(false); // 기존 작업 취소
 		}
 	}
 
 	// 딜레이 스케줄 설정
+//	private synchronized void scheduleLeaveAfterDelay() {
+//		if(leaveTimer != null) {
+//			leaveTimer.cancel();
+//		}
+//
+//		leaveTimer = new Timer();
+//		leaveTimer.schedule(new TimerTask() {
+//			@Override
+//			public void run() {
+//				leaveVoiceChannel();
+//			}
+//		},30 * 1000);
+//	}
 	private void scheduleLeaveAfterDelay() {
-		if(leaveTimer != null) {
-			leaveTimer.cancel();
+		if (leaveTask != null && !leaveTask.isDone()) {
+			leaveTask.cancel(false); // 기존 작업 취소
 		}
 
-		leaveTimer = new Timer();
-		leaveTimer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				leaveVoiceChannel();
-			}
-		},30 * 1000);
+		// 30초 후에 실행될 작업 예약
+		leaveTask = scheduler.schedule(() -> leaveVoiceChannel(), 30, TimeUnit.SECONDS);
 	}
 
 	// 음성 채널 떠나기
-	private void leaveVoiceChannel() {
+	private synchronized void leaveVoiceChannel() {
 		AudioManager audioManager = guild.getAudioManager();
 		if(audioManager.isConnected()) {
 			audioManager.closeAudioConnection();
@@ -80,7 +98,13 @@ public class TrackScheduler extends AudioEventAdapter {
 
 	public void skipTrack() {
 		player.stopTrack();
-		nextTrack();
+		AudioTrack nextTrack = musicQueue.nextTrack();
+
+		if (nextTrack != null) {
+			nextTrack();
+		} else {
+			scheduleLeaveAfterDelay();
+		}
 	}
 
 	public void nextTrack() {
@@ -99,5 +123,14 @@ public class TrackScheduler extends AudioEventAdapter {
 
 	public MusicQueue getMusicQueue() {
 		return musicQueue;
+	}
+
+	public Boolean isThereMoreTracks() {
+		if (musicQueue.nextTrack() != null) {
+			return musicQueue.nextTrack().isSeekable();
+		} else if(musicQueue.nextTrack() == null) {
+			return false;
+		} else
+			return false;
 	}
 }

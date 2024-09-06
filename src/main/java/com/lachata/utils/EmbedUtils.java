@@ -36,7 +36,7 @@ public class EmbedUtils {
 			// 트랙 정보를 필드로 추가 (제목, 아티스트, 길이)
 			builder.addField(
 					(i + 1) + ". " + trackTitle, // 트랙 번호와 제목
-					"아티스트: " + trackArtist + " | 길이: " + trackDurationFormatted,
+					"올린 이 : " + trackArtist + " | 길이 : " + trackDurationFormatted,
 					false
 			                );
 		}
@@ -87,7 +87,7 @@ public class EmbedUtils {
 			builder.setTitle("Now Playing")
 					.setDescription("현재 재생 중인 트랙 정보")
 					.addField("제목", trackTitle, false)
-					.addField("아티스트", trackArtist, false)
+					.addField("올린 이", trackArtist, false)
 					.addField("현재 재생위치", currentPositionFormatted + " / " + trackDurationFormatted, false)
 					.addField("진행 상황", progressBar.toString(), false);
 		}

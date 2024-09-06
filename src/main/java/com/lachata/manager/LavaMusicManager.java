@@ -28,14 +28,11 @@ public class LavaMusicManager {
 	private static final ConcurrentHashMap<Long, GuildMusicManager> musicManager = new ConcurrentHashMap<>();
 
 	// YoutubeAudioSourceManager 인스턴스를 초기화합니다. 검색을 활성화하고 다양한 클라이언트를 추가합니다.
-	private static final YoutubeAudioSourceManager youtube = new YoutubeAudioSourceManager(
-			/*allowSearch:*/ true,
-			                 new Client[] {
-					                 new Music(),
-					                 new Web(),
-					                 new AndroidTestsuite()
-			                 }
-	);
+	private static final YoutubeAudioSourceManager youtube =
+			new YoutubeAudioSourceManager(true, true, true, new Client[] {
+					new Music(),
+					new Web(),
+					new AndroidTestsuite()});
 
 	static {
 		// YoutubeAudioSourceManager를 등록합니다.
@@ -63,12 +60,13 @@ public class LavaMusicManager {
 	}
 
 	// URL을 사용한 트랙 로드 및 재생.
-	public static void loadUrlAndPlay(final TextChannel textChannel, final Guild guild, final String trackUrl) {
+	public static void loadUrlAndPlay(final TextChannel textChannel, final Guild guild, final String query) {
 		final GuildMusicManager musicManager = getGuildMusicManager(guild);
 		final MusicQueue musicQueue = musicManager.scheduler.getMusicQueue();
 
+		String searchQuery = query.startsWith("http") ? query : "ytsearch:" + query;
 		// 주어진 URL 또는 검색어를 사용해 트랙을 로드합니다.
-		playerManager.loadItem(trackUrl, new AudioLoadResultHandler() {
+		playerManager.loadItem(searchQuery, new AudioLoadResultHandler() {
 			@Override
 			public void trackLoaded(AudioTrack audioTrack) {
 				logger.info("Single track requested: {}" , audioTrack.getInfo().title);
@@ -107,7 +105,7 @@ public class LavaMusicManager {
 
 			@Override
 			public void noMatches() {
-				logger.info("No matches found for track **`{}`**", trackUrl);
+				logger.info("No matches found for track **`{}`**", query);
 				// 검색어 또는 URL이 유효하지 않을 때
 				textChannel.sendMessage("일치하는 트랙을 찾지 못했습니다!").queue();
 			}
@@ -157,9 +155,16 @@ public class LavaMusicManager {
 
 
 	// 현재 곡 스킵하기
-	public static void skipTrack(final Guild guild) {
+	public static void skipTrack(final Guild guild, final TextChannel textChannel) {
 		final GuildMusicManager musicManager = getGuildMusicManager(guild);
-		musicManager.scheduler.skipTrack();
+
+		Boolean hasMoreTracks = musicManager.scheduler.isThereMoreTracks();
+		if (hasMoreTracks != null && hasMoreTracks) {
+			musicManager.scheduler.skipTrack();
+		} else {
+			musicManager.scheduler.skipTrack();
+			textChannel.sendMessage("더 이상 재생할 곡이 없습니다.").queue();
+		}
 	}
 
 	// 대기열 목록 반환
