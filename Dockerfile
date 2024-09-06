@@ -48,3 +48,9 @@ RUN bash -c "source /root/.sdkman/bin/sdkman-init.sh && gradle clean shadowJar -
 #ENV BOT_TOKEN=${BOT_TOKEN}
 
 ENTRYPOINT ["java", "-jar", "/app/LaChaTa_Bot/build/libs/LachataBot-1.0-SNAPSHOT-all.jar"]
+
+## DOCKER BUILD
+# docker build --no-cache -t lachata-bot .
+
+## DOCKER RUN   - add Token into <your-discord-bot-token>
+# docker run -d --name lachata-bot-container -e BOT_TOKEN=<your-discord-bot-token> lachata-bot
