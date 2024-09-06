@@ -18,7 +18,7 @@ public class CommandManager extends ListenerAdapter {
 	private final Logger logger = LoggerFactory.getLogger(CommandManager.class);
 
 	private final List<CommandData> commands = new ArrayList<>();
-	private static final List<String> commandDictionary = List.of("재생", "일시정지", "재개" ,"스킵", "대기열", "현재", "볼륨");
+	private static final List<String> commandDictionary = List.of("재생", "일시정지", "재개" ,"스킵", "대기열", "현재", "볼륨","나가");
 	private final OnMessageCommandHandler messageCommand;
 //	private final SlashCommandHandler slashCommand;
 	private final BotSetting botSetting;
@@ -49,20 +49,15 @@ public class CommandManager extends ListenerAdapter {
 	public void onMessageReceived(MessageReceivedEvent mre) {
 
 		final long messageFromChannel = mre.getChannel().getIdLong();
-
-
-		if(!botSetting.checkChannel(messageFromChannel)) {
-			logger.info("동작이 설정된 채널이 아닙니다.");
-			return;
-		}
-
-
-
-
 		final String message = mre.getMessage().getContentRaw();
 
 		if(message.startsWith("!채널")) {
 			messageCommand.handleChannelSetting(message, botSetting, mre.getChannel());
+		}
+
+		if(!botSetting.checkChannel(messageFromChannel)) {
+//			logger.info("동작이 설정된 채널이 아닙니다.");
+			return;
 		}
 
 		if (message.startsWith("!")) {
@@ -72,13 +67,10 @@ public class CommandManager extends ListenerAdapter {
 				final String commandName = inputCommand[0];
 				final String arguments = inputCommand.length > 1 ? inputCommand[1] : "";
 
-				if (!"".equals(arguments)) {
-					messageCommand.handleCommand(mre, commandName , arguments);
-				} else {
+				messageCommand.handleCommand(mre, commandName , arguments);
+			} else {
 					mre.getChannel().sendMessage("알 수 없는 명령어 입니다.").queue();
-				}
 			}
-
 		}
 	}
 }

@@ -54,8 +54,6 @@ public class OnMessageCommandHandler {
 
 			case "대기열":
 				MusicQueue nowPlayinLinst = LavaMusicManager.nowQueueList(guild);
-
-
 				channel.sendMessageEmbeds(
 						embedUtils.createQueueEmbed(nowPlayinLinst).build()
 				                         ).queue();
@@ -73,6 +71,10 @@ public class OnMessageCommandHandler {
 			case "볼륨":
 				int wannaVolume = Integer.parseInt(arguments);
 				LavaMusicManager.setVolume(channel, guild, wannaVolume);
+
+			case "나가":
+				guild.getAudioManager().closeAudioConnection();
+
 		}
 	}
 
