@@ -1,6 +1,6 @@
 package com.lachata;
 
-import com.lachata.config.ConfigLoader;
+//import com.lachata.config.ConfigLoader;
 import com.lachata.manager.CommandManager;
 import com.lachata.utils.EmbedUtils;
 import net.dv8tion.jda.api.JDA;
@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.util.EnumSet;
-import java.util.Properties;
+//import java.util.Properties;
 
 public class MainBot {
 	public static void main(String[] args) {

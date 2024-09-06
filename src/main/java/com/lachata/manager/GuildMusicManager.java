@@ -1,6 +1,6 @@
 package com.lachata.manager;
 
-import com.lachata.entity.MusicInfo;
+//import com.lachata.entity.MusicInfo;
 import com.lachata.utils.FormatChecker;
 import com.lachata.entity.MusicQueue;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -18,6 +18,8 @@ public class GuildMusicManager {
 		this.audioPlayer = manager.createPlayer();
 		this.scheduler = new TrackScheduler(this.audioPlayer , trackList);
 		this.audioPlayer.addListener(this.scheduler);
+
+		audioPlayer.setVolume(100);
 	}
 
 	public AudioPlayerSendHandler getSendHandler() {
@@ -55,8 +57,6 @@ public class GuildMusicManager {
 	public long currentTrackPosition() {
 		return audioPlayer.getPlayingTrack().getPosition();
 	}
-
-
 
 	// 현재 재생목록 반환
 	public MusicQueue getMusicQueue() {

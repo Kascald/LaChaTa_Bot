@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 
 public class BotSetting {
 	private final List<Channel> channelList;
-	private final int trackVolume;
+//	private final int trackVolume;
 
 	public BotSetting() {
 		this.channelList = new ArrayList<>();
-		this.trackVolume = 100;
+//		this.trackVolume = 100;
 	}
 
 	public boolean checkChannel(long channelId) {

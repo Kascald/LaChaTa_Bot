@@ -5,7 +5,7 @@ import com.lachata.entity.MusicQueue;
 import com.lachata.manager.LavaMusicManager;
 import com.lachata.utils.EmbedUtils;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import net.dv8tion.jda.api.EmbedBuilder;
+//import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -13,9 +13,12 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OnMessageCommandHandler {
 //	private static final List<String> commandDictionary = List.of("재생", "정지", "스킵", "대기열", "현재", "볼륨");
+	private final Logger logger = LoggerFactory.getLogger(OnMessageCommandHandler.class);
 	private final EmbedUtils embedUtils;
 
 	public OnMessageCommandHandler(EmbedUtils embedUtils) {
@@ -23,6 +26,7 @@ public class OnMessageCommandHandler {
 	}
 
 	public void handleCommand(MessageReceivedEvent mre, String commandName, String arguments) {
+		logger.info("handleCommand detect - command: {} /  arg : {}", commandName , arguments );
 		TextChannel channel = mre.getChannel().asTextChannel();
 		Guild guild = mre.getGuild();
 
@@ -74,6 +78,7 @@ public class OnMessageCommandHandler {
 
 	private void inviteBotVoice(MessageReceivedEvent mre) {
 		if (mre.getMember() == null || mre.getMember().getVoiceState() == null) {
+			logger.info("User Not in Voice Channel");
 			// 사용자가 음성 채널에 참여하지 않으면 메시지를 출력
 			mre.getChannel().sendMessage("음성 채널에 참여한 후 명령어를 사용해 주세요.").queue();
 			return;
@@ -84,6 +89,7 @@ public class OnMessageCommandHandler {
 		if (audioChannel != null && audioChannel.getType().isAudio()) {
 			// AudioChannelUnion을 VoiceChannel로 변환
 			VoiceChannel voiceChannel = audioChannel.asVoiceChannel();
+			logger.info("Voice Channel: {}  <- Bot join", voiceChannel.getName());
 
 			// 봇을 해당 음성 채널에 연결
 			Guild guild = mre.getGuild();
@@ -94,6 +100,7 @@ public class OnMessageCommandHandler {
 	}
 
 	public void handleChannelSetting(String message, BotSetting botSetting, MessageChannelUnion channel) {
+		logger.info("handleChannelSetting detect - msg: {}", message);
 		if (message.substring(3).startsWith("설정"))
 			addChannel(botSetting, channel);
 		if(message.substring(3).startsWith("보기"))
@@ -102,12 +109,15 @@ public class OnMessageCommandHandler {
 
 
 	private void addChannel(BotSetting botSetting, MessageChannelUnion messageChannelUnion) {
+
 		Channel ch = messageChannelUnion.asTextChannel();
 		botSetting.setChannelList(ch);
+		logger.info("addChannel detect - ch: {}", ch);
 		messageChannelUnion.sendMessage("입력하신 채널 설정이 완료되었습니다.").queue();
 	}
 
 	private void viewChannel(BotSetting botSetting, MessageChannelUnion messageChannelUnion) {
+		logger.info("viewChannel detect");
 		messageChannelUnion.sendMessage("설정된 채널 : "+ botSetting.toStringChannelList()).queue();
 	}
 }

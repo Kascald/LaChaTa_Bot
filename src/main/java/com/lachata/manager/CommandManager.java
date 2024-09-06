@@ -8,21 +8,22 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CommandManager extends ListenerAdapter {
+	private final Logger logger = LoggerFactory.getLogger(CommandManager.class);
 
 	private final List<CommandData> commands = new ArrayList<>();
 	private static final List<String> commandDictionary = List.of("재생", "일시정지", "재개" ,"스킵", "대기열", "현재", "볼륨");
 	private final OnMessageCommandHandler messageCommand;
 //	private final SlashCommandHandler slashCommand;
 	private final BotSetting botSetting;
-	private final EmbedUtils embedUtils;
 
 	public CommandManager(EmbedUtils embedUtils) {
-		this.embedUtils = embedUtils;
 		this.messageCommand = new OnMessageCommandHandler(embedUtils);
 //		this.slashCommand = new SlashCommandHandler();
 		this.botSetting = new BotSetting();
@@ -46,10 +47,16 @@ public class CommandManager extends ListenerAdapter {
 
 	@Override
 	public void onMessageReceived(MessageReceivedEvent mre) {
+
 		final long messageFromChannel = mre.getChannel().getIdLong();
+
+
 		if(!botSetting.checkChannel(messageFromChannel)) {
+			logger.info("동작이 설정된 채널이 아닙니다.");
 			return;
 		}
+
+
 
 
 		final String message = mre.getMessage().getContentRaw();

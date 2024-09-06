@@ -1,5 +1,5 @@
 package com.lachata.exception;
-
+/* Useless */
 public class CustomException extends RuntimeException{
 	private final String errCode;
 	private final String errMessage;

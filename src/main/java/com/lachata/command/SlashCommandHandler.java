@@ -18,6 +18,7 @@
 //
 //import java.util.List;
 //
+// /* update later */
 //public class SlashCommandHandler implements SlashCommandInteraction {
 //	@Override
 //	public int getTypeRaw() {

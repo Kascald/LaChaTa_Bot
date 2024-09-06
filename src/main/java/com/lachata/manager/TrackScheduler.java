@@ -6,8 +6,11 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TrackScheduler extends AudioEventAdapter {
+	private final Logger logger = LoggerFactory.getLogger(TrackScheduler.class);
 	private final AudioPlayer player;
 	private final MusicQueue musicQueue;
 
@@ -38,7 +41,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		if (nextTrack != null) {
 			player.startTrack(nextTrack, false);  // 다음 트랙을 재생
 		} else {
-			System.out.println("End of the queue, no more tracks."); //다음 트랙이 없음
+			logger.info("End of the queue, no more tracks."); //다음 트랙이 없음
 			musicQueue.clearMusicQueue(); // 트랙 대기열 객체를 클리어함.
 		}
 	}

@@ -16,11 +16,14 @@ import dev.lavalink.youtube.clients.Web;
 import dev.lavalink.youtube.clients.skeleton.Client;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LavaMusicManager {
+	private static final Logger logger = LoggerFactory.getLogger(LavaMusicManager.class);
 	private static final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
 	private static final ConcurrentHashMap<Long, GuildMusicManager> musicManager = new ConcurrentHashMap<>();
 
@@ -68,6 +71,7 @@ public class LavaMusicManager {
 		playerManager.loadItem(trackUrl, new AudioLoadResultHandler() {
 			@Override
 			public void trackLoaded(AudioTrack audioTrack) {
+				logger.info("Single track requested: {}" , audioTrack.getInfo().title);
 				// 트랙을 대기열에 추가하고 재생
 				MusicInfo musicInfo = new MusicInfo(audioTrack, audioTrack.getInfo().title, audioTrack.getInfo().author, audioTrack.getInfo().length, 0, false);
 				musicQueue.addQueue(musicInfo);  // 대기열에 추가
@@ -81,6 +85,7 @@ public class LavaMusicManager {
 
 			@Override
 			public void playlistLoaded(AudioPlaylist audioPlaylist) {
+				logger.info("List Play requested");
 				final List<AudioTrack> tracks = audioPlaylist.getTracks();
 				if (!tracks.isEmpty()) {
 					AudioTrack firstTrack = tracks.get(0);
@@ -102,14 +107,16 @@ public class LavaMusicManager {
 
 			@Override
 			public void noMatches() {
+				logger.info("No matches found for track **`{}`**", trackUrl);
 				// 검색어 또는 URL이 유효하지 않을 때
 				textChannel.sendMessage("일치하는 트랙을 찾지 못했습니다!").queue();
 			}
 
 			@Override
 			public void loadFailed(FriendlyException e) {
+				logger.info("Track load failed: {} " , e.getMessage());
 				// 트랙 로드 중 실패했을 때
-				textChannel.sendMessage("트랙을 로드하는 중 오류가 발생했습니다: " + e.getMessage()).queue();
+				textChannel.sendMessage("트랙을 로드하는 중 오류가 발생했습니다: ").queue(); // + e.getMessage()).queue();
 			}
 		});
 	}
