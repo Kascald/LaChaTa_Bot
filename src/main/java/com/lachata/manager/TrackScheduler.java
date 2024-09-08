@@ -3,6 +3,7 @@ package com.lachata.manager;
 import com.lachata.config.BotSetting;
 import com.lachata.entity.MusicInfo;
 import com.lachata.entity.MusicQueue;
+import com.lachata.utils.SafeTimer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEvent;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
@@ -28,14 +29,13 @@ public class TrackScheduler extends AudioEventAdapter {
 	private final AudioPlayer player;
 	private final MusicQueue musicQueue;
 	private final Guild guild;
-//	private Timer leaveTimer;
+	private SafeTimer safeTimer;
 
-	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-	private ScheduledFuture<?> leaveTask;
 	public TrackScheduler(AudioPlayer player, MusicQueue musicQueue, Guild guild) {
 		this.player = player;
 		this.musicQueue = musicQueue;
 		this.guild = guild;
+		this.safeTimer = new SafeTimer();
 	}
 
 	public void playQueue(AudioTrack track) {
@@ -60,32 +60,23 @@ public class TrackScheduler extends AudioEventAdapter {
 //		if(leaveTimer != null) {
 //			leaveTimer.cancel();
 //		}
-		if (leaveTask != null) {
-			leaveTask.cancel(false); // 기존 작업 취소
+		if (this.safeTimer.isTaskScheduled()) {
+			this.safeTimer.cancel(); // 기존 작업 취소
 		}
 	}
 
-	// 딜레이 스케줄 설정
-//	private synchronized void scheduleLeaveAfterDelay() {
-//		if(leaveTimer != null) {
-//			leaveTimer.cancel();
-//		}
-//
-//		leaveTimer = new Timer();
-//		leaveTimer.schedule(new TimerTask() {
-//			@Override
-//			public void run() {
-//				leaveVoiceChannel();
-//			}
-//		},30 * 1000);
-//	}
 	public void scheduleLeaveAfterDelay() {
-		if (leaveTask != null && !leaveTask.isDone()) {
-			leaveTask.cancel(false); // 기존 작업 취소
+		if (this.safeTimer.isTaskScheduled()) {
+			this.safeTimer.cancel(); // 기존 작업 취소
 		}
-
-		// 30초 후에 실행될 작업 예약
-		leaveTask = scheduler.schedule(() -> leaveVoiceChannel(), 30, TimeUnit.SECONDS);
+		this.safeTimer = new SafeTimer();
+		// 새로운 작업을 30초 후에 스케줄링
+		this.safeTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				leaveVoiceChannel();
+			}
+		}, 30 * 1000); // 30초 후 실행
 	}
 
 	// 음성 채널 떠나기
