@@ -1,6 +1,5 @@
 package com.lachata.entity;
 
-import com.lachata.utils.FormatChecker;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import java.util.List;
@@ -9,16 +8,14 @@ import java.util.ArrayList;
 
 public class MusicQueue {
 	private final ConcurrentLinkedQueue<MusicInfo> playingQueue; // FIFO 구조
-	private final FormatChecker formatChecker;
-	private final int maxSize = 30;
 
-	public MusicQueue(FormatChecker formatChecker) {
-		this.formatChecker = formatChecker;
+	public MusicQueue() {
 		this.playingQueue = new ConcurrentLinkedQueue<>();
 	}
 
 	// 대기열에 새로운 트랙 추가
 	public void addQueue(MusicInfo musicInfo) {
+		int maxSize = 30;
 		if (playingQueue.size() < maxSize) {
 			playingQueue.add(musicInfo);
 		} else {

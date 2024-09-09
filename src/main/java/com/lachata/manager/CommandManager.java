@@ -8,13 +8,12 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+//import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CommandManager extends ListenerAdapter {
 	private final Logger logger = LoggerFactory.getLogger(CommandManager.class);
@@ -48,7 +47,7 @@ public class CommandManager extends ListenerAdapter {
 		return commands;
 	}
 
-//	@Override
+//	@Override //Will Update
 //	public void onSlashCommandInteraction(SlashCommandInteractionEvent scie) {
 //		super.onSlashCommandInteraction(scie);
 //	}
@@ -82,11 +81,4 @@ public class CommandManager extends ListenerAdapter {
 			}
 		}
 	}
-
-
-//	public String getCommandsAsString() {
-//		return commands.stream()
-//				.map(commandData -> String.format("Command: %s ", commandData.getName()))
-//				.collect(Collectors.joining("\n"));
-//	}
 }

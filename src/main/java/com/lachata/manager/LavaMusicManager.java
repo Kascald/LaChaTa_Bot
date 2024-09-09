@@ -189,12 +189,12 @@ public class LavaMusicManager {
 			if (musicManager.scheduler.isThereMoreTracks()) {
 				textChannel.sendMessage("다음 곡으로 넘어갑니다.").queue();
 			} else {
-				textChannel.sendMessage("더 이상 재생할 곡이 없습니다. 30초 후 봇이 자동으로 나갑니다.").queue();
-				musicManager.scheduler.scheduleLeaveAfterDelay();
+				textChannel.sendMessage("더 이상 재생할 곡이 없습니다. 잠시 후 봇이 자동으로 나갑니다.").queue();
+//				musicManager.scheduler.scheduleLeaveAfterDelay();
 			}
 		} else {
-			textChannel.sendMessage("더 이상 재생할 곡이 없습니다. 30초 후 봇이 자동으로 나갑니다...").queue();
-			musicManager.scheduler.scheduleLeaveAfterDelay();
+			textChannel.sendMessage("더 이상 재생할 곡이 없습니다. 잠시 후 봇이 자동으로 나갑니다...").queue();
+//			musicManager.scheduler.scheduleLeaveAfterDelay();
 		}
 	}
 

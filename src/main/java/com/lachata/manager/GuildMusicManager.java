@@ -1,12 +1,10 @@
 package com.lachata.manager;
 
 //import com.lachata.entity.MusicInfo;
-import com.lachata.utils.FormatChecker;
 import com.lachata.entity.MusicQueue;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import net.dv8tion.jda.api.entities.Guild;
 
 public class GuildMusicManager {
@@ -16,8 +14,7 @@ public class GuildMusicManager {
 
 	public GuildMusicManager(AudioPlayerManager manager, Guild guild) {
 		this.guild = guild;
-		FormatChecker formatChecker = new FormatChecker();
-		MusicQueue trackList = new MusicQueue(formatChecker);
+		MusicQueue trackList = new MusicQueue();
 
 		this.audioPlayer = manager.createPlayer();
 		this.scheduler = new TrackScheduler(this.audioPlayer , trackList, guild);
