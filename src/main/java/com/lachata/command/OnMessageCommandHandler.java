@@ -75,6 +75,7 @@ public class OnMessageCommandHandler {
 				break;
 
 			case "나가":
+				LavaMusicManager.clearPlayList(guild);
 				guild.getAudioManager().closeAudioConnection();
 				break;
 		}

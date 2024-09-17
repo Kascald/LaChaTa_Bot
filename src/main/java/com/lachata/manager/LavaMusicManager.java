@@ -232,4 +232,12 @@ public class LavaMusicManager {
 		textChannel.sendMessage(String.format("볼륨이 %d 로 설정되었습니다. ", volume)).queue();
 	}
 
+	public static void clearPlayList(final Guild guild) {
+		final GuildMusicManager musicManager = getGuildMusicManager(guild);
+
+		while(!musicManager.scheduler.isThereMoreTracks()) {
+			musicManager.scheduler.skipTrack();
+		}
+	}
+
 }
