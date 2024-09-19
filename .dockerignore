@@ -1,6 +1,5 @@
 *.log
 *.md
-.gradle
 
 ### IntelliJ IDEA ###
 .idea/
