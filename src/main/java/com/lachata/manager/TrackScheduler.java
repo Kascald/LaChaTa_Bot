@@ -105,13 +105,16 @@ public class TrackScheduler extends AudioEventAdapter {
 			player.startTrack(nextTrack, false);  // 다음 트랙을 재생
 		} else {
 			logger.info("End of the queue, no more tracks.");  // 다음 트랙이 없음
-			musicQueue.clearMusicQueue();  // 트랙 대기열 클리어
 			scheduleLeaveAfterDelay();  // 더 이상 트랙이 없을 때 봇이 일정 시간 후 떠남
 		}
 	}
 
 	public MusicQueue getMusicQueue() {
 		return musicQueue;
+	}
+
+	public void clearing() {
+		musicQueue.clearMusicQueue();
 	}
 
 	public Boolean isThereMoreTracks() {

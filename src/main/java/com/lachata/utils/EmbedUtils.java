@@ -21,7 +21,7 @@ public class EmbedUtils {
 		}
 
 		// 최대 30개의 트랙을 임베드에 추가
-		for (int i = 0; i < queue.size() && i < 30; i++) {
+		for (int i = 0; i < queue.size() && i < 24; i++) {
 			MusicInfo trackInfo = queue.get(i);
 			String trackTitle = trackInfo.getTitle();
 			String trackArtist = trackInfo.getArtist();
@@ -41,9 +41,9 @@ public class EmbedUtils {
 			                );
 		}
 
-		// 만약 대기열에 30개 이상의 트랙이 있으면 추가 트랙이 있음을 알림
-		if (queue.size() > 30) {
-			builder.addField("...", "그 외 " + (queue.size() - 30) + "개의 트랙이 있습니다.", false);
+		// 만약 대기열에 25개 이상의 트랙이 있으면 추가 트랙이 있음을 알림
+		if (queue.size() > 24) {
+			builder.addField("...", "그 외 " + (queue.size() - 25) + "개의 트랙이 있습니다.", false);
 		}
 
 		return builder;
@@ -91,6 +91,14 @@ public class EmbedUtils {
 					.addField("현재 재생위치", currentPositionFormatted + " / " + trackDurationFormatted, false)
 					.addField("진행 상황", progressBar.toString(), false);
 		}
+
+		return builder;
+	}
+
+	public EmbedBuilder nowPlayingNullEmbed() {
+		EmbedBuilder builder = new EmbedBuilder();
+
+		builder.setTitle("현재 재생중인 트랙이 없습니다.").setDescription("재생할 노래를 추가해주세요.");
 
 		return builder;
 	}

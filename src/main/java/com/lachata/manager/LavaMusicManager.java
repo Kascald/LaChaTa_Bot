@@ -19,6 +19,9 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -235,9 +238,35 @@ public class LavaMusicManager {
 	public static void clearPlayList(final Guild guild) {
 		final GuildMusicManager musicManager = getGuildMusicManager(guild);
 
-		while(!musicManager.scheduler.isThereMoreTracks()) {
-			musicManager.scheduler.skipTrack();
-		}
+		musicManager.clearQueue();
+		musicManager.scheduler.skipTrack();
 	}
+
+//	private static String UrlChecker(final String input) {
+//		// .com/  혹은 .be/~~ 의 url 입력이 들어오다고 가정할 때
+//		//1. 가장 먼저 watch? 가 오는데 &list가 없는 경우. (정상 처리)
+//		//2. watch 후 &list 와 start_radio가 오는 경우.
+//		//3. watch 후 &list 와 index가 오는 경우.
+//		//4. playlist가 오고 ?list 가 포함되는경우
+//		boolean checkDotCom = isShortURL(input);
+//		if (checkDotCom) {
+//
+//		}else {
+//			String[] hostDomain = input.split(".be/");
+//			String[] isVideoId = hostDomain[1].split("\\?");
+//			String videoId = isVideoId[0];
+//		}
+//
+//	}
+//
+//	private static boolean isShortURL(String url) {
+//		try {
+//			URL parseUrl = new URL(url);
+//			String host = parseUrl.getHost();
+//			return host.equals("youtube.com");
+//		} catch (MalformedURLException e) {
+//			return false;
+//		}
+//	}
 
 }

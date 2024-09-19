@@ -62,11 +62,21 @@ public class OnMessageCommandHandler {
 
 			case "현재":
 				AudioTrack currentPlaying = LavaMusicManager.nowPlayingInfo(guild);
-				long currentPosition = LavaMusicManager.nowPlayingLength(guild);
+				long currentPosition = 0L;
 
-				channel.sendMessageEmbeds(
-						embedUtils.createNowPlayingEmbed(currentPlaying,currentPosition).build()
-				                         ).queue();
+				if(currentPlaying != null) {
+					currentPosition = LavaMusicManager.nowPlayingLength(guild);
+
+					channel.sendMessageEmbeds(
+							embedUtils.createNowPlayingEmbed(currentPlaying,currentPosition).build()
+					                         ).queue();
+				} else { //현재 재생곡이 없는 경우
+					channel.sendMessageEmbeds(
+							embedUtils.nowPlayingNullEmbed().build()
+					                         ).queue();
+				}
+
+
 				break;
 
 			case "볼륨":

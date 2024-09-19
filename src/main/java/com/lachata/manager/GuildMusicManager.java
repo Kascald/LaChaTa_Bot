@@ -68,4 +68,9 @@ public class GuildMusicManager {
 	public void setVolume(int volume) {
 		audioPlayer.setVolume(volume);
 	}
+
+	public void clearQueue() {
+		scheduler.clearing();
+//		audioPlayer.removeListener(scheduler);
+	}
 }
