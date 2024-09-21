@@ -1,7 +1,8 @@
 package com.lachata.command;
 
-import com.lachata.config.BotSetting;
+import com.lachata.config.ChannelSetting;
 import com.lachata.entity.MusicQueue;
+import com.lachata.manager.GuildMusicManager;
 import com.lachata.manager.LavaMusicManager;
 import com.lachata.utils.EmbedUtils;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -114,25 +115,31 @@ public class OnMessageCommandHandler {
 		}
 	}
 
-	public void handleChannelSetting(String message, BotSetting botSetting, MessageChannelUnion channel) {
+	public void handleChannelSetting(String message , MessageChannelUnion channel, Guild guild) {
 		logger.info("handleChannelSetting detect - msg: {}", message);
 		if (message.substring(3).startsWith("설정"))
-			addChannel(botSetting, channel);
+			addChannel(channel,guild);
 		if(message.substring(3).startsWith("보기"))
-		    viewChannel(botSetting, channel);
+		    viewChannel(channel,guild);
 	}
 
 
-	private void addChannel(BotSetting botSetting, MessageChannelUnion messageChannelUnion) {
+	private void addChannel( MessageChannelUnion messageChannelUnion, Guild guild) {
 
 		Channel ch = messageChannelUnion.asTextChannel();
-		botSetting.setChannelList(ch);
+		final GuildMusicManager musicManager = LavaMusicManager.getGuildMusicManager(guild);
+
+		musicManager.channelSetting.setChannelList(ch);
+
 		logger.info("addChannel detect - ch: {}", ch);
 		messageChannelUnion.sendMessage("입력하신 채널 설정이 완료되었습니다.").queue();
 	}
 
-	private void viewChannel(BotSetting botSetting, MessageChannelUnion messageChannelUnion) {
+	private void viewChannel(MessageChannelUnion messageChannelUnion, Guild guild) {
 		logger.info("viewChannel detect");
-		messageChannelUnion.sendMessage("설정된 채널 : "+ botSetting.toStringChannelList()).queue();
+
+		final GuildMusicManager musicManager = LavaMusicManager.getGuildMusicManager(guild);
+
+		messageChannelUnion.sendMessage("설정된 채널 : "+ musicManager.channelSetting.toStringChannelList()).queue();
 	}
 }

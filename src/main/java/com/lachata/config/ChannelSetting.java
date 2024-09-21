@@ -2,17 +2,16 @@ package com.lachata.config;
 
 import net.dv8tion.jda.api.entities.channel.Channel;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-public class BotSetting {
-	private final List<Channel> channelList;
-//	private final int trackVolume;
+public class ChannelSetting {
+	private final CopyOnWriteArrayList<Channel> channelList;
+	//	private final int trackVolume;
 
-	public BotSetting() {
-		this.channelList = new ArrayList<>();
-//		this.trackVolume = 100;
+	public ChannelSetting() {
+		this.channelList = new CopyOnWriteArrayList<>();
+		//		this.trackVolume = 100;
 	}
 
 	public boolean checkChannel(long channelId) {
@@ -25,7 +24,7 @@ public class BotSetting {
 		return false;  //설정 채널과 다름으로 간주하고 false
 	}
 
-	public List<Channel> getChannelList() {
+	public CopyOnWriteArrayList<Channel> getChannelList() {
 		return channelList;
 	}
 
@@ -37,5 +36,14 @@ public class BotSetting {
 		return channelList.stream()
 				.map(Channel::getName)
 				.collect(Collectors.joining(", "));
+	}
+
+	public boolean checkChannel(Long channelId) {
+		for(Channel channel : channelList) {
+			if(channel.getIdLong() == channelId) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

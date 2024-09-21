@@ -1,19 +1,19 @@
 package com.lachata.manager;
 
 import com.lachata.command.OnMessageCommandHandler;
-//import com.lachata.command.SlashCommandHandler;
-import com.lachata.config.BotSetting;
 import com.lachata.utils.EmbedUtils;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-//import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CommandManager extends ListenerAdapter {
 	private final Logger logger = LoggerFactory.getLogger(CommandManager.class);
@@ -22,13 +22,13 @@ public class CommandManager extends ListenerAdapter {
 	private final List<CommandData> commands = new ArrayList<>();
 	private static final List<String> commandDictionary = List.of("재생", "일시정지", "재개" ,"스킵", "대기열", "현재", "볼륨","나가","도움말", "헬프", "help");
 	private final OnMessageCommandHandler messageCommand;
-//	private final SlashCommandHandler slashCommand;
-	private final BotSetting botSetting;
+	private CopyOnWriteArrayList<Channel> channels;
 
 	public CommandManager(EmbedUtils embedUtils) {
+		//	private final SlashCommandHandler slashCommand;
+		//	this.slashCommand = new SlashCommandHandler();
 		this.messageCommand = new OnMessageCommandHandler(embedUtils);
-//		this.slashCommand = new SlashCommandHandler();
-		this.botSetting = new BotSetting();
+		this.channels = new CopyOnWriteArrayList<>();
 		this.commands.add(Commands.slash("재생", "음악 재생 : URL , 검색어  (유투브 기준) "));
 		this.commands.add(Commands.slash("일시정지", "음악 정지"));
 		this.commands.add(Commands.slash("재개", "일시정지된 음악 재생"));
@@ -59,15 +59,22 @@ public class CommandManager extends ListenerAdapter {
 		final String message = mre.getMessage().getContentRaw();
 
 		if(message.startsWith("!채널")) {
-			messageCommand.handleChannelSetting(message, botSetting, mre.getChannel());
+			//lavaplayer 에서 채널세팅 설정하기.
+			final Guild guild = mre.getGuild();
+			messageCommand.handleChannelSetting(message, mre.getChannel(), guild);
 		}
 
-		if(!botSetting.checkChannel(messageFromChannel)) {
-//			logger.info("동작이 설정된 채널이 아닙니다.");
-			return;
-		}
+
 
 		if (message.startsWith("!")) {
+			final Guild guild = mre.getGuild();
+			final GuildMusicManager guildMusicManager = LavaMusicManager.getGuildMusicManager(guild);
+			this.channels = guildMusicManager.channelSetting.getChannelList();
+
+			if(!guildMusicManager.channelSetting.checkChannel(messageFromChannel)) {
+				return;
+			}
+
 			final String[] inputCommand = message.substring(1).split(" ", 2);
 			if (commandDictionary.contains(inputCommand[0])) {
 				final String commandName = inputCommand[0];

@@ -128,7 +128,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		new Thread(() -> {
 			try {
 				int retries = 0;
-				while (retries < 10) {
+				while (retries < 100) {
 					AudioFrame frame = player.provide();
 					if (frame != null) {
 						logger.info("Stream is successfully loaded and playing: {}", track.getInfo().title);

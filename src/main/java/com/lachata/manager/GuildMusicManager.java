@@ -1,6 +1,7 @@
 package com.lachata.manager;
 
 //import com.lachata.entity.MusicInfo;
+import com.lachata.config.ChannelSetting;
 import com.lachata.entity.MusicQueue;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -11,9 +12,11 @@ public class GuildMusicManager {
 	public final AudioPlayer audioPlayer;
 	public final TrackScheduler scheduler;
 	public final Guild guild;
+	public ChannelSetting channelSetting;
 
 	public GuildMusicManager(AudioPlayerManager manager, Guild guild) {
 		this.guild = guild;
+		this.channelSetting = new ChannelSetting();
 		MusicQueue trackList = new MusicQueue();
 
 		this.audioPlayer = manager.createPlayer();
@@ -46,13 +49,13 @@ public class GuildMusicManager {
 		// by Player
 		AudioTrack nowTrack = audioPlayer.getPlayingTrack();
 
-//		// by Queue
-//		AudioTrack maybeNowTrack = scheduler.getNowPlayingMusic().getTrack();
-//
-//		if(nowTrack.getInfo().title.equals(maybeNowTrack.getInfo().title))
+		//		// by Queue
+		//		AudioTrack maybeNowTrack = scheduler.getNowPlayingMusic().getTrack();
+		//
+		//		if(nowTrack.getInfo().title.equals(maybeNowTrack.getInfo().title))
 		return nowTrack;
 
-//		return null;
+		//		return null;
 	}
 
 	public long currentTrackPosition() {
@@ -71,6 +74,7 @@ public class GuildMusicManager {
 
 	public void clearQueue() {
 		scheduler.clearing();
-//		audioPlayer.removeListener(scheduler);
+		//		audioPlayer.removeListener(scheduler);
 	}
+
 }
