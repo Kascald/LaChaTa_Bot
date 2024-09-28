@@ -35,7 +35,19 @@ public class LavaMusicManager {
 //					new Music(),
 //					new Web(),
 //					new AndroidTestsuite()});
-			new YoutubeAudioSourceManager(true);
+//			new YoutubeAudioSourceManager(true, new WebWithThumbnail(), new AndroidMusicWithThumbnail(), new TvHtml5EmbeddedWithThumbnail(), new MusicWithThumbnail());
+//			new YoutubeAudioSourceManager(true,true,true, new Client[] {
+//					new Music(), new Android()
+//			});
+			new YoutubeAudioSourceManager(/*allowSearch:*/ true, new Client[] {
+					new MediaConnect(),
+					new Music(),
+					new MusicWithThumbnail(),
+					new Web(),
+					new WebEmbedded(),
+					new AndroidTestsuite(),
+					new Android(),
+					new AndroidTestsuiteWithThumbnail() });
 
 	static {
 //		youtube.useOauth2();

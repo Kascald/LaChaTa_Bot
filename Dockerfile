@@ -55,7 +55,6 @@
 ## DOCKER RUN   - add Token into <your-discord-bot-token>
 # docker run -d --name lachata-bot-container -e BOT_TOKEN=<your-discord-bot-token> lachata-bot:latest --cpus="0.3" --memory="512m"
 
-
 ###arm version
 FROM --platform=linux/arm64 alpine:latest
 LABEL authors="yoruni"
@@ -76,6 +75,7 @@ RUN git clone https://github.com/Kascald/LaChaTa_Bot.git
 
 WORKDIR /app/LaChaTa_Bot
 RUN bash -c "source /root/.sdkman/bin/sdkman-init.sh && gradle clean shadowJar --no-daemon --parallel"
+
 
 #ENV BOT_TOKEN=${BOT_TOKEN}
 
