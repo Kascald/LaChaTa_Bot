@@ -11,9 +11,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
-import dev.lavalink.youtube.clients.AndroidTestsuite;
-import dev.lavalink.youtube.clients.Music;
-import dev.lavalink.youtube.clients.Web;
+import dev.lavalink.youtube.clients.*;
 import dev.lavalink.youtube.clients.skeleton.Client;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -33,12 +31,14 @@ public class LavaMusicManager {
 
 	// YoutubeAudioSourceManager 인스턴스를 초기화합니다. 검색을 활성화하고 다양한 클라이언트를 추가합니다.
 	private static final YoutubeAudioSourceManager youtube =
-			new YoutubeAudioSourceManager(true, true, true, new Client[]{
-					new Music(),
-					new Web(),
-					new AndroidTestsuite()});
+//			new YoutubeAudioSourceManager(true, true, true, new Client[]{
+//					new Music(),
+//					new Web(),
+//					new AndroidTestsuite()});
+			new YoutubeAudioSourceManager(true);
 
 	static {
+//		youtube.useOauth2();
 		// YoutubeAudioSourceManager를 등록합니다.
 		playerManager.registerSourceManager(youtube);
 
