@@ -39,7 +39,7 @@ public class LavaMusicManager {
 //			new YoutubeAudioSourceManager(true,true,true, new Client[] {
 //					new Music(), new Android()
 //			});
-			new YoutubeAudioSourceManager(/*allowSearch:*/ true, new Client[] {
+			new YoutubeAudioSourceManager(/*allowSearch:*/ true, true, true, new Client[] {
 					new MediaConnect(),
 					new Music(),
 					new MusicWithThumbnail(),
