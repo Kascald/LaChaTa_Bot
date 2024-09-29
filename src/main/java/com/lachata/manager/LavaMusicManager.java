@@ -40,14 +40,16 @@ public class LavaMusicManager {
 //					new Music(), new Android()
 //			});
 			new YoutubeAudioSourceManager(/*allowSearch:*/ true, true, true, new Client[] {
-					new MediaConnect(),
 					new Music(),
 					new MusicWithThumbnail(),
-					new Web(),
+					new TvHtml5Embedded(),
+					new AndroidMusic(),
 					new WebEmbedded(),
-					new AndroidTestsuite(),
 					new Android(),
-					new AndroidTestsuiteWithThumbnail() });
+					new AndroidLite(),
+					new MediaConnect(),
+					new Ios()
+			});
 
 	static {
 //		youtube.useOauth2();
