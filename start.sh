@@ -1,3 +1,5 @@
+#!/bin/sh
+
 if [ -f "/app/LachataBot.jar" ]; then
   exec java -jar "/app/LachataBot.jar"
 else
