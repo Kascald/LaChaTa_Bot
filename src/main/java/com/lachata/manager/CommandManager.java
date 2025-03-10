@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.slf4j.Logger;
@@ -29,13 +30,17 @@ public class CommandManager extends ListenerAdapter {
 		//	this.slashCommand = new SlashCommandHandler();
 		this.messageCommand = new OnMessageCommandHandler(embedUtils);
 		this.channels = new CopyOnWriteArrayList<>();
-		this.commands.add(Commands.slash("재생", "음악 재생 : URL , 검색어  (유투브 기준) "));
+		this.commands.add(Commands.slash("재생", "음악 재생 : URL , 검색어  (유투브 기준) ")
+				                  .addOption(OptionType.STRING, "url", "youtube URL", false)
+				                  .addOption(OptionType.STRING,"keyword", "youtube search keyword",false)
+		                 );
 		this.commands.add(Commands.slash("일시정지", "음악 정지"));
 		this.commands.add(Commands.slash("재개", "일시정지된 음악 재생"));
 		this.commands.add(Commands.slash("스킵", "음악 스킵"));
 		this.commands.add(Commands.slash("대기열", "추가한 대기열 목록보기"));
 		this.commands.add(Commands.slash("현재", "현재 재생중인 노래"));
-		this.commands.add(Commands.slash("볼륨", "음악 재생 볼륨 조절 ( 0 ~ 100 ) "));
+		this.commands.add(Commands.slash("볼륨", "음악 재생 볼륨 조절 ( 0 ~ 100 ) ")
+				                  .addOption(OptionType.INTEGER, "volume","control volume",true));
 		this.commands.add(Commands.slash("나가", "음악채널 나감" ));
 		this.commands.add(Commands.slash("도움말", "명령어 도움말 호출"));
 		this.commands.add(Commands.slash("헬프", "명령어 도움말 호출"));

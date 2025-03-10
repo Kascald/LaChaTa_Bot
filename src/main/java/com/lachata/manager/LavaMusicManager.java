@@ -46,8 +46,6 @@ public class LavaMusicManager {
 					new AndroidMusic(),
 					new WebEmbedded(),
 					new Android(),
-					new AndroidLite(),
-					new MediaConnect(),
 					new Ios()
 			});
 
@@ -102,6 +100,7 @@ public class LavaMusicManager {
 						String.format("Added track **`%s`** by **`%s`**", audioTrack.getInfo().title,
 						              audioTrack.getInfo().author)
 				                       ).queue();
+
 			}
 
 			@Override
