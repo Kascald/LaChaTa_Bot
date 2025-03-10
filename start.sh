@@ -1,5 +1,5 @@
-if [ -f "/app/my-bot.jar" ]; then
-  exec java -jar "/app/my-bot.jar"
+if [ -f "/app/LachataBot.jar" ]; then
+  exec java -jar "/app/LachataBot.jar"
 else
   JAR_FILE=$(ls /app/LaChaTa_Bot/build/libs/LachataBot-*.jar 2>/dev/null | head -n 1)
   if [ -n "$JAR_FILE" ]; then

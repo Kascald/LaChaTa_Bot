@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 //import java.util.Properties;
 
 public class MainBot {
@@ -27,35 +28,45 @@ public class MainBot {
 		// 환경 변수로부터 DISCORD_BOT_TOKEN 가져오기
 		String botToken = System.getenv("BOT_TOKEN");
 
-		JDA jda = JDABuilder.createDefault(botToken,
-		                                   EnumSet.of(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_VOICE_STATES))  // GUILD_VOICE_STATES 추가
-				.setActivity(Activity.playing("Youtube Playing !도움말 !헬프 !help \n Slash 명령어 추가!"))
-				.build();
+
 
 		EmbedUtils embedUtils = new EmbedUtils();
 		CommandManager botCommandManager = new CommandManager(embedUtils);
 //		botCommandManager.setCommands();
 
-//		List<CommandData> cmd = new ArrayList<>();
-//		cmd.add(Commands.slash("재생", "music play")
-//				        .addOption(OptionType.STRING,"url", "youtube URL",false)
-//				        .addOption(OptionType.STRING,"keyword", "youtube search keyword",false)
-//		       );
-//		cmd.add(Commands.slash("볼륨" , "volume 설정")
-//				        .addOption(OptionType.INTEGER, "volume","control volume",true));
-//		cmd.add(Commands.slash("일시정지","일시정지"));
-//		cmd.add(Commands.slash("재개","일시정지 풀기"));
-//		cmd.add(Commands.slash("스킵","현재 곡 넘기기"));
-//		cmd.add(Commands.slash("대기열","현재 재생목록"));
-//		cmd.add(Commands.slash("현재","지금 재생중인 곡"));
-//		cmd.add(Commands.slash("나가","봇 나가기"));
+//		List<CommandData> commands = new CopyOnWriteArrayList<>();
+//		commands.add(Commands.slash("재생", "음악 재생 : URL , 검색어  (유투브 기준) ")
+//				             .addOption(OptionType.STRING, "url", "youtube URL", false)
+//				             .addOption(OptionType.STRING,"keyword", "youtube search keyword",false)
+//		            );
+//		commands.add(Commands.slash("일시정지", "음악 정지"));
+//		commands.add(Commands.slash("재개", "일시정지된 음악 재생"));
+//		commands.add(Commands.slash("스킵", "음악 스킵"));
+//		commands.add(Commands.slash("대기열", "추가한 대기열 목록보기"));
+//		commands.add(Commands.slash("현재", "현재 재생중인 노래"));
+//		commands.add(Commands.slash("볼륨", "음악 재생 볼륨 조절 ( 0 ~ 100 ) ")
+//				             .addOption(OptionType.INTEGER, "volume","control volume",true));
+//		commands.add(Commands.slash("나가", "음악채널 나감" ));
+//		commands.add(Commands.slash("도움말", "명령어 도움말 호출"));
+//		commands.add(Commands.slash("헬프", "명령어 도움말 호출"));
+//		commands.add(Commands.slash("help", "명령어 도움말 호출"));
 //
-//		jda.updateCommands()
-//				.addCommands(cmd.toArray(new CommandData[0])) // 새로운 명령어 목록만 추가
-//				.queue();
+
+		JDA jda = JDABuilder.createDefault(botToken,
+		                                   EnumSet.of(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_VOICE_STATES))  // GUILD_VOICE_STATES 추가
+				.setActivity(Activity.playing("Youtube Playing !도움말 !헬프 !help \n Slash 명령어 추가!"))
+				.build();
+
+//		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//			if (jda != null) {
+//				jda.shutdown();
+//			}
+//		}));
+
 		jda.addEventListener(new SlashCommandHandler(embedUtils));
 		jda.addEventListener(botCommandManager);
 		jda.updateCommands().addCommands(botCommandManager.getCommands()).queue();
+
 
 
 	}

@@ -43,7 +43,7 @@ RUN apk update && apk --no-cache add gcompat libstdc++ bash openjdk17
 
 WORKDIR /app
 # Builder에서 생성한 JAR 파일과 startup 스크립트 복사
-COPY --from=builder /app/LaChaTa_Bot/build/libs/*-all.jar /app/my-bot.jar
+COPY --from=builder /app/LaChaTa_Bot/build/libs/*.jar /app/LachataBot.jar
 COPY --from=builder /app/start.sh /app/start.sh
 
 # start.sh 스크립트가 JAR 파일을 자동으로 찾아 실행하도록 함

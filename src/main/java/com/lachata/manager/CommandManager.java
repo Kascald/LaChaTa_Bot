@@ -1,6 +1,7 @@
 package com.lachata.manager;
 
 import com.lachata.command.OnMessageCommandHandler;
+import com.lachata.command.SlashCommandHandler;
 import com.lachata.utils.EmbedUtils;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -27,7 +28,7 @@ public class CommandManager extends ListenerAdapter {
 
 	public CommandManager(EmbedUtils embedUtils) {
 		//	private final SlashCommandHandler slashCommand;
-		//	this.slashCommand = new SlashCommandHandler();
+//			this.slashCommand = new SlashCommandHandler();
 		this.messageCommand = new OnMessageCommandHandler(embedUtils);
 		this.channels = new CopyOnWriteArrayList<>();
 		this.commands.add(Commands.slash("재생", "음악 재생 : URL , 검색어  (유투브 기준) ")
