@@ -94,3 +94,8 @@ LaChaTa 봇은 다양한 명령어를 제공합니다. 사용자는 채팅 메�
 [//]: # (HOTFIX 0.6.2)
 [//]: # (길드별 뮤직매니저 생성은 되나, 채널설정 명령어가 길드별 채널인식을 방해하던 현상 해결)
 
+## Ref
+[https://maven.lavalink.dev/#/](https://maven.lavalink.dev/#/) </br>
+[https://github.com/lavalink-devs/youtube-source](https://github.com/lavalink-devs/youtube-source) </br>
+[https://github.com/lavalink-devs/lavaplayer](https://github.com/lavalink-devs/lavaplayer) </br>
+
