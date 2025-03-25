@@ -1,15 +1,16 @@
 package com.lachata.manager;
 
-import com.lachata.config.ChannelSetting;
 import com.lachata.entity.MusicInfo;
 import com.lachata.entity.MusicQueue;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
 import dev.lavalink.youtube.clients.*;
 import dev.lavalink.youtube.clients.skeleton.Client;
@@ -18,9 +19,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,26 +29,29 @@ public class LavaMusicManager {
 
 	// YoutubeAudioSourceManager 인스턴스를 초기화합니다. 검색을 활성화하고 다양한 클라이언트를 추가합니다.
 	private static final YoutubeAudioSourceManager youtube =
-//			new YoutubeAudioSourceManager(true, true, true, new Client[]{
-//					new Music(),
-//					new Web(),
-//					new AndroidTestsuite()});
-//			new YoutubeAudioSourceManager(true, new WebWithThumbnail(), new AndroidMusicWithThumbnail(), new TvHtml5EmbeddedWithThumbnail(), new MusicWithThumbnail());
-//			new YoutubeAudioSourceManager(true,true,true, new Client[] {
-//					new Music(), new Android()
-//			});
-			new YoutubeAudioSourceManager(/*allowSearch:*/ true, true, true, new Client[] {
-					new Music(),
+			//			new YoutubeAudioSourceManager(true, true, true, new Client[]{
+			//					new Music(),
+			//					new Web(),
+			//					new AndroidTestsuite()});
+			//			new YoutubeAudioSourceManager(true, new WebWithThumbnail(), new AndroidMusicWithThumbnail(), new
+			//			TvHtml5EmbeddedWithThumbnail(), new MusicWithThumbnail());
+			//			new YoutubeAudioSourceManager(true,true,true, new Client[] {
+			//					new Music(), new Android()
+			//			});
+			new YoutubeAudioSourceManager(true, true, true, new Client[]{
+					new AndroidMusicWithThumbnail(),
+					new AndroidVrWithThumbnail(),
+					new AndroidWithThumbnail(),
+					new IosWithThumbnail(),
+					new MWebWithThumbnail(),
 					new MusicWithThumbnail(),
-					new TvHtml5Embedded(),
-					new AndroidMusic(),
-					new WebEmbedded(),
-					new Android(),
-					new Ios()
+					new TvHtml5EmbeddedWithThumbnail(),
+					new WebEmbeddedWithThumbnail(),
+					new WebWithThumbnail()
 			});
 
 	static {
-//		youtube.useOauth2();
+		//		youtube.useOauth2();
 		// YoutubeAudioSourceManager를 등록합니다.
 		playerManager.registerSourceManager(youtube);
 
@@ -63,11 +64,13 @@ public class LavaMusicManager {
 	public static synchronized GuildMusicManager getGuildMusicManager(Guild guild) {
 		long guildId = Long.parseLong(guild.getId());
 
-		return musicManager.computeIfAbsent(guildId, id -> {
-			GuildMusicManager guildMusicManager = new GuildMusicManager(playerManager, guild);
-			guild.getAudioManager().setSendingHandler(guildMusicManager.getSendHandler());
-			return guildMusicManager;
-		});
+		return musicManager.computeIfAbsent(
+				guildId, id -> {
+					GuildMusicManager guildMusicManager = new GuildMusicManager(playerManager, guild);
+					guild.getAudioManager().setSendingHandler(guildMusicManager.getSendHandler());
+					return guildMusicManager;
+				}
+		                                   );
 	}
 
 	// URL 또는 검색어를 받아 트랙을 로드하고 재생합니다.
@@ -84,79 +87,92 @@ public class LavaMusicManager {
 		String searchQuery = isUrl ? query : "ytsearch:" + query;
 
 		// 주어진 URL 또는 검색어를 사용해 트랙을 로드합니다.
-		playerManager.loadItem(searchQuery, new AudioLoadResultHandler() {
-			@Override
-			public void trackLoaded(AudioTrack audioTrack) {
-				logger.info("Single track requested: {}", audioTrack.getInfo().title);
-				// 트랙을 대기열에 추가하고 재생
-				MusicInfo musicInfo = new MusicInfo(audioTrack, audioTrack.getInfo().title,
-				                                    audioTrack.getInfo().author, audioTrack.getInfo().length, 0,
-				                                    false);
-				musicQueue.addQueue(musicInfo);  // 대기열에 추가
-
-				musicManager.scheduler.playQueue(audioTrack);
-
-				textChannel.sendMessage(
-						String.format("Added track **`%s`** by **`%s`**", audioTrack.getInfo().title,
-						              audioTrack.getInfo().author)
-				                       ).queue();
-
-			}
-
-			@Override
-			public void playlistLoaded(AudioPlaylist audioPlaylist) {
-				logger.info("List Play requested");
-				final List<AudioTrack> tracks = audioPlaylist.getTracks();
-
-				if (!tracks.isEmpty()) {
-					if (isUrl) {
-						for (AudioTrack track : tracks) {
-							MusicInfo musicInfo = new MusicInfo(track, track.getInfo().title, track.getInfo().author,
-							                                    track.getInfo().length, 0, false);
-							musicQueue.addQueue(musicInfo);  // 대기열에 추가
-						}
-
-						// 첫 번째 트랙을 재생
-						musicManager.scheduler.playQueue(tracks.get(0));
-
-						textChannel.sendMessage(
-								String.format("Added playlist with **%d** tracks. Now playing: **`%s`** by **`%s`**",
-								              tracks.size(), tracks.get(0).getInfo().title,
-								              tracks.get(0).getInfo().author
-								             )
-						                       ).queue();
-					} else {
-						AudioTrack firstTrack = tracks.get(0);
-
-						MusicInfo musicInfo = new MusicInfo(firstTrack, firstTrack.getInfo().title,
-						                                    firstTrack.getInfo().author, firstTrack.getInfo().length,
-						                                    0, false);
+		playerManager.loadItem(
+				searchQuery, new AudioLoadResultHandler() {
+					@Override
+					public void trackLoaded(AudioTrack audioTrack) {
+						logger.info("Single track requested: {}", audioTrack.getInfo().title);
+						// 트랙을 대기열에 추가하고 재생
+						MusicInfo musicInfo = new MusicInfo(
+								audioTrack, audioTrack.getInfo().title,
+								audioTrack.getInfo().author, audioTrack.getInfo().length, 0,
+								false
+						);
 						musicQueue.addQueue(musicInfo);  // 대기열에 추가
 
-						musicManager.scheduler.playQueue(firstTrack);
+						musicManager.scheduler.playQueue(audioTrack);
 
 						textChannel.sendMessage(
-								String.format("Added track **`%s`** by **`%s`** from YouTube search.",
-								              firstTrack.getInfo().title, firstTrack.getInfo().author)
+								String.format(
+										"Added track **`%s`** by **`%s`**", audioTrack.getInfo().title,
+										audioTrack.getInfo().author
+								             )
 						                       ).queue();
+
+					}
+
+					@Override
+					public void playlistLoaded(AudioPlaylist audioPlaylist) {
+						logger.info("List Play requested");
+						final List<AudioTrack> tracks = audioPlaylist.getTracks();
+
+						if (!tracks.isEmpty()) {
+							if (isUrl) {
+								for (AudioTrack track : tracks) {
+									MusicInfo musicInfo = new MusicInfo(
+											track, track.getInfo().title, track.getInfo().author,
+											track.getInfo().length, 0, false
+									);
+									musicQueue.addQueue(musicInfo);  // 대기열에 추가
+								}
+
+								// 첫 번째 트랙을 재생
+								musicManager.scheduler.playQueue(tracks.get(0));
+
+								textChannel.sendMessage(
+										String.format(
+												"Added playlist with **%d** tracks. Now playing: **`%s`** by **`%s`**",
+												tracks.size(), tracks.get(0).getInfo().title,
+												tracks.get(0).getInfo().author
+										             )
+								                       ).queue();
+							} else {
+								AudioTrack firstTrack = tracks.get(0);
+
+								MusicInfo musicInfo = new MusicInfo(
+										firstTrack, firstTrack.getInfo().title,
+										firstTrack.getInfo().author, firstTrack.getInfo().length,
+										0, false
+								);
+								musicQueue.addQueue(musicInfo);  // 대기열에 추가
+
+								musicManager.scheduler.playQueue(firstTrack);
+
+								textChannel.sendMessage(
+										String.format(
+												"Added track **`%s`** by **`%s`** from YouTube search.",
+												firstTrack.getInfo().title, firstTrack.getInfo().author
+										             )
+								                       ).queue();
+							}
+						}
+					}
+
+					@Override
+					public void noMatches() {
+						logger.info("No matches found for track **`{}`**", query);
+						// 검색어 또는 URL이 유효하지 않을 때
+						textChannel.sendMessage("일치하는 트랙을 찾지 못했습니다!").queue();
+					}
+
+					@Override
+					public void loadFailed(FriendlyException e) {
+						logger.info("Track load failed: {} ", e.getMessage());
+						// 트랙 로드 중 실패했을 때
+						textChannel.sendMessage("트랙을 로드하는 중 오류가 발생했습니다: ").queue(); // + e.getMessage()).queue();
 					}
 				}
-			}
-
-			@Override
-			public void noMatches() {
-				logger.info("No matches found for track **`{}`**", query);
-				// 검색어 또는 URL이 유효하지 않을 때
-				textChannel.sendMessage("일치하는 트랙을 찾지 못했습니다!").queue();
-			}
-
-			@Override
-			public void loadFailed(FriendlyException e) {
-				logger.info("Track load failed: {} ", e.getMessage());
-				// 트랙 로드 중 실패했을 때
-				textChannel.sendMessage("트랙을 로드하는 중 오류가 발생했습니다: ").queue(); // + e.getMessage()).queue();
-			}
-		});
+		                      );
 	}
 
 	// 특정 길드에 음악 관리자가 있는지 확인합니다.
@@ -207,11 +223,11 @@ public class LavaMusicManager {
 				textChannel.sendMessage("다음 곡으로 넘어갑니다.").queue();
 			} else {
 				textChannel.sendMessage("더 이상 재생할 곡이 없습니다. 잠시 후 봇이 자동으로 나갑니다.").queue();
-//				musicManager.scheduler.scheduleLeaveAfterDelay();
+				//				musicManager.scheduler.scheduleLeaveAfterDelay();
 			}
 		} else {
 			textChannel.sendMessage("더 이상 재생할 곡이 없습니다. 잠시 후 봇이 자동으로 나갑니다...").queue();
-//			musicManager.scheduler.scheduleLeaveAfterDelay();
+			//			musicManager.scheduler.scheduleLeaveAfterDelay();
 		}
 	}
 
@@ -256,31 +272,31 @@ public class LavaMusicManager {
 		musicManager.scheduler.skipTrack();
 	}
 
-//	private static String UrlChecker(final String input) {
-//		// .com/  혹은 .be/~~ 의 url 입력이 들어오다고 가정할 때
-//		//1. 가장 먼저 watch? 가 오는데 &list가 없는 경우. (정상 처리)
-//		//2. watch 후 &list 와 start_radio가 오는 경우.
-//		//3. watch 후 &list 와 index가 오는 경우.
-//		//4. playlist가 오고 ?list 가 포함되는경우
-//		boolean checkDotCom = isShortURL(input);
-//		if (checkDotCom) {
-//
-//		}else {
-//			String[] hostDomain = input.split(".be/");
-//			String[] isVideoId = hostDomain[1].split("\\?");
-//			String videoId = isVideoId[0];
-//		}
-//
-//	}
-//
-//	private static boolean isShortURL(String url) {
-//		try {
-//			URL parseUrl = new URL(url);
-//			String host = parseUrl.getHost();
-//			return host.equals("youtube.com");
-//		} catch (MalformedURLException e) {
-//			return false;
-//		}
-//	}
+	//	private static String UrlChecker(final String input) {
+	//		// .com/  혹은 .be/~~ 의 url 입력이 들어오다고 가정할 때
+	//		//1. 가장 먼저 watch? 가 오는데 &list가 없는 경우. (정상 처리)
+	//		//2. watch 후 &list 와 start_radio가 오는 경우.
+	//		//3. watch 후 &list 와 index가 오는 경우.
+	//		//4. playlist가 오고 ?list 가 포함되는경우
+	//		boolean checkDotCom = isShortURL(input);
+	//		if (checkDotCom) {
+	//
+	//		}else {
+	//			String[] hostDomain = input.split(".be/");
+	//			String[] isVideoId = hostDomain[1].split("\\?");
+	//			String videoId = isVideoId[0];
+	//		}
+	//
+	//	}
+	//
+	//	private static boolean isShortURL(String url) {
+	//		try {
+	//			URL parseUrl = new URL(url);
+	//			String host = parseUrl.getHost();
+	//			return host.equals("youtube.com");
+	//		} catch (MalformedURLException e) {
+	//			return false;
+	//		}
+	//	}
 
 }
