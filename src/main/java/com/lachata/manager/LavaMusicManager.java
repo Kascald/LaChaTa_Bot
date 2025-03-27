@@ -76,6 +76,7 @@ public class LavaMusicManager {
 	// URL 또는 검색어를 받아 트랙을 로드하고 재생합니다.
 	public static void loadAndPlay(final TextChannel textChannel, final Guild guild, final String input) {
 		loadUrlAndPlay(textChannel, guild, input);
+
 	}
 
 	// URL을 사용한 트랙 로드 및 재생.

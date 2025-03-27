@@ -57,27 +57,33 @@ public class SlashCommandHandler extends ListenerAdapter {
 		else if(volume != null) option = volume;
 		else option = "";
 
+//		event.deferReply().queue();
+
 		CompletableFuture.runAsync(() -> {
 			switch (event.getName()) {
 					case "재생":
 						inviteBotVoice(event);
 						LavaMusicManager.loadAndPlay(channel , guild, option);
-						event.reply("");
+						event.reply("재생정보는 아래 메시지를 확인하세요").setEphemeral(true).queue();
 						break;
+
 					case "일시정지":
 						if(!LavaMusicManager.isTrackPaused(guild)) {
 							LavaMusicManager.pauseTrack(channel, guild);
+							event.reply("노래를 일시정지하였습니다.").setEphemeral(true).queue();
 							break;
 						}
 
 					case "재개":
 						if(LavaMusicManager.isTrackPaused(guild)) {
 							LavaMusicManager.resumeTrack(channel, guild);
+							event.reply("노래 재생을 재개합니다.").setEphemeral(true).queue();
 							break;
 						}
 
 					case "스킵":
 						LavaMusicManager.skipTrack(guild, channel);
+						event.reply("스킵 실행! ").setEphemeral(true).queue();
 						break;
 
 					case "대기열":
@@ -85,11 +91,13 @@ public class SlashCommandHandler extends ListenerAdapter {
 						channel.sendMessageEmbeds(
 								embedUtils.createQueueEmbed(nowPlayinLinst).build()
 						                         ).queue();
+						event.reply("재생신청 곡 리스트 출력!").setEphemeral(true).queue();
 						break;
 
 					case "현재":
 						AudioTrack currentPlaying = LavaMusicManager.nowPlayingInfo(guild);
 						long currentPosition = 0L;
+
 
 						if(currentPlaying != null) {
 							currentPosition = LavaMusicManager.nowPlayingLength(guild);
@@ -103,21 +111,25 @@ public class SlashCommandHandler extends ListenerAdapter {
 							                         ).queue();
 						}
 
-
+						event.reply("현재 재생중인 곡 정보!").setEphemeral(true).queue();
 						break;
 
 					case "볼륨":
+
 						int wannaVolume = Integer.parseInt(option);
 						LavaMusicManager.setVolume(channel, guild, wannaVolume);
+						event.reply("볼륨을 조절합니다!").setEphemeral(true).queue();
 						break;
 
 					case "나가":
 						LavaMusicManager.clearPlayList(guild);
 						guild.getAudioManager().closeAudioConnection();
+						event.reply("봇 퇴장!").setEphemeral(true).queue();
 						break;
 				}
 		}).thenRun(() ->{
-			event.getHook().editOriginal("").queue();
+//			event.getHook().editOriginal("").queue();
+//			event.reply("").queue();
 		});
 
 	}

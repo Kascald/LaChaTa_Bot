@@ -48,3 +48,6 @@ COPY --from=builder /app/start.sh /app/start.sh
 
 # start.sh 스크립트가 JAR 파일을 자동으로 찾아 실행하도록 함
 ENTRYPOINT ["/app/start.sh"]
+
+# docker build -t lachata-bot:latest .
+# docker run -d --name <CONTAINER_NAME> -e BOT_TOKEN=<BOT_TOKEN> lachata-bot:latest --cpus="0.2" --memory="512m" # CPU & MEMORY SETTING
