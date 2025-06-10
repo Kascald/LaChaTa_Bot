@@ -3,7 +3,7 @@
 ###########################
 # Builder Stage (Alpine)
 ###########################
-FROM alpine:latest as builder
+FROM alpine:latest AS builder
 LABEL authors="yoruni"
 
 # 빌드에 필요한 패키지 설치
